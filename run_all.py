@@ -124,43 +124,16 @@ def main():
         except Exception:
             pass
 
-    # ตรวจสอบว่ามี Cloudflare Tunnel เดิมทำงานอยู่แล้วหรือไม่
-    reuse_tunnel = is_tunnel_healthy(current_tunnel)
-
-    if not reuse_tunnel:
-        print("🌐 [1/3] กำลังเปิด Cloudflare Tunnel...", flush=True)
-        cf_cmd = [str(CLOUDFLARED_EXE), "tunnel", "--url", "http://127.0.0.1:5000", "--protocol", "http2"]
-        cf_proc = subprocess.Popen(
-            cf_cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            bufsize=1
-        )
-        processes.append(cf_proc)
-
-        # สแกนหา URL จาก Cloudflare Output
-        start_time = time.time()
-        while time.time() - start_time < 20:
-            line = cf_proc.stdout.readline()
-            if not line:
-                time.sleep(0.1)
-                continue
-            
-            match = re.search(r"https://([a-zA-Z0-9-]+\.trycloudflare\.com)", line)
-            if match:
-                current_tunnel = f"https://{match.group(1)}"
-                break
-
-        if current_tunnel:
-            print(f"✅ [TUNNEL ONLINE] {current_tunnel}", flush=True)
-            update_configs(current_tunnel)
-        else:
-            print("⚠️ [TUNNEL WARNING] ไม่สามารถดึง URL จาก Quick Tunnel ได้ทันเวลา จะใช้ค่าเดิม", flush=True)
+    import tunnel_manager
+    print("🌐 [1/3] กำลังเชื่อมต่อ ngrok Permanent Static Domain...", flush=True)
+    ok, ng_url = tunnel_manager.start_ngrok_tunnel(5000)
+    if ok and ng_url:
+        current_tunnel = ng_url
+        print(f"✅ [PERMANENT DOMAIN ONLINE] {current_tunnel}", flush=True)
+        update_configs(current_tunnel)
     else:
-        print(f"✅ [1/3] Cloudflare Tunnel กำลังทำงานอยู่แล้ว: {current_tunnel}", flush=True)
+        current_tunnel = "https://avert-starch-ragweed.ngrok-free.dev"
+        update_configs(current_tunnel)
 
     tunnel_url = current_tunnel
 
