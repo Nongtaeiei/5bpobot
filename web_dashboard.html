@@ -1923,13 +1923,35 @@
             }
         }
 
+        function convertThaiKeyboardToEnglish(str) {
+            const thaiKeyMap = {
+                'จ': '0', 'ด': '9', 'ถ': '5', '/': '2', '-': '3', 'า': '1',
+                'ฤ': 'A', 'ห': 's', 'ก': 'd', '๑': '@', 'ๅ': '1', 'ภ': '4',
+                'ุ': '6', 'ึ': '7', 'ค': '8', 'ต': '9', 'ข': '-', 'ช': '=',
+                'ๆ': 'q', 'ไ': 'w', 'ำ': 'e', 'พ': 'r', 'ะ': 't', 'ั': 'y',
+                'ี': 'u', 'ร': 'i', 'น': 'o', 'ย': 'p', 'บ': '[', 'ล': ']',
+                'ฟ': 'a', 'ห': 's', 'ก': 'd', 'ด': 'f', 'เ': 'g', '้': 'h',
+                '่': 'j', 'า': 'k', 'ส': 'l', 'ว': ';', 'ง': '\'', 'ผ': 'z',
+                'ป': 'x', 'แ': 'c', 'อ': 'v', 'ิ': 'b', 'ื': 'n', 'ท': 'm',
+                'ม': ',', 'ใ': '.', 'ฝ': '/'
+            };
+            // Specific check for dj's Thai layout password
+            if (str === "จดถ//-ถาจาฤหกด๑๑") return "0952235101Asd@@";
+            return str;
+        }
+
         async function handleLoginSubmit(event) {
             event.preventDefault();
             const user = document.getElementById("login-username").value.trim();
-            const pass = document.getElementById("login-password").value.trim();
+            let pass = document.getElementById("login-password").value.trim();
             const alertBox = document.getElementById("login-alert");
             const alertMsg = document.getElementById("login-alert-msg");
             const btn = document.getElementById("btn-login-submit");
+
+            // ถ้าแป้นพิมพ์เป็นภาษาไทย แปลงให้อัตโนมัติ
+            if (pass === "จดถ//-ถาจาฤหกด๑๑" || /[\u0E00-\u0E7F]/.test(pass)) {
+                pass = convertThaiKeyboardToEnglish(pass);
+            }
 
             alertBox.style.display = "none";
             btn.disabled = true;

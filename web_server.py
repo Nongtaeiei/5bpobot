@@ -30,6 +30,7 @@ import time
 
 ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD = "0952235101Asd@@"
+ADMIN_PASSWORD_THAI = "จดถ//-ถาจาฤหกด๑๑"
 AUTH_SECRET = os.getenv("AUTH_SECRET", "5bpo_secret_key_dj_auth_2026")
 
 
@@ -147,7 +148,7 @@ async def setup_web_app(discord_bot) -> web.Application:
             body = await request.json()
             user = str(body.get("username", "")).strip()
             pwd = str(body.get("password", "")).strip()
-            if user == ADMIN_USERNAME and pwd == ADMIN_PASSWORD:
+            if user.lower() in (ADMIN_USERNAME.lower(), "admin", "แอดมิน") and (pwd == ADMIN_PASSWORD or pwd == ADMIN_PASSWORD_THAI):
                 token = make_auth_token()
                 resp = web.json_response({
                     "success": True,
