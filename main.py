@@ -909,9 +909,51 @@ async def on_ready():
     print("[READY] AutoQuest bot is ready!", flush=True)
 
 
+class DuplicateCommandError(commands.CommandError):
+    pass
+
+
+async def is_duplicate_bot_message(ctx: commands.Context, window_sec: float = 3.5) -> bool:
+    """เช็คว่ามีข้อความตอบรับจากบอทเราเองในห้องนี้ในช่วง 3.5 วินาทีที่ผ่านมาหรือไม่ เพื่อป้องกันการเด้งซ้ำ 2 อันเด็ดขาด"""
+    try:
+        async for m in ctx.channel.history(limit=6):
+            if m.author.id == ctx.bot.user.id and (discord.utils.utcnow() - m.created_at).total_seconds() < window_sec:
+                return True
+    except Exception:
+        pass
+    return False
+
+
+@bot.before_invoke
+async def deduplicate_command(ctx: commands.Context):
+    """Hooks ดักคำสั่งทั้งหมด ป้องกันบอทรันซ้อน 2 ตัวส่งข้อความซ้ำกันเด็ดขาด"""
+    try:
+        await asyncio.sleep(random.uniform(0.12, 0.42))
+        if await is_duplicate_bot_message(ctx, window_sec=3.5):
+            print(f"⚠️ [DEDUP] ตรวจพบการตอบรับแล้ว ข้ามคำสั่ง '{ctx.command.name}' เพื่อไม่ให้เด้งซ้ำ 2 อัน!", flush=True)
+            raise DuplicateCommandError()
+    except DuplicateCommandError:
+        raise
+    except Exception as e:
+        print(f"[DEDUP HOOK ERROR] {e}", flush=True)
+
+
+@bot.event
+async def on_command_error(ctx: commands.Context, error):
+    if isinstance(error, DuplicateCommandError):
+        return
+    if isinstance(error, commands.CommandOnCooldown):
+        return
+    if isinstance(error, commands.MissingPermissions):
+        return
+    print(f"[CMD ERROR] {ctx.command}: {error}", flush=True)
+
+
 @bot.command(name="setup")
 @commands.cooldown(1, 3.0, commands.BucketType.user)
 async def setup_cmd(ctx: commands.Context, image_url: str = None):
+    if await is_duplicate_bot_message(ctx):
+        return
     try:
         await ctx.message.delete()
     except Exception:
@@ -928,7 +970,7 @@ async def setup_cmd(ctx: commands.Context, image_url: str = None):
 
 @setup_cmd.error
 async def setup_cmd_error(ctx: commands.Context, error):
-    if isinstance(error, commands.CommandOnCooldown):
+    if isinstance(error, (commands.CommandOnCooldown, DuplicateCommandError)):
         return
 
 
@@ -1228,6 +1270,8 @@ class OpenWelcomeSetupView(discord.ui.View):
 @commands.cooldown(1, 3.0, commands.BucketType.user)
 async def setup_welcome_cmd(ctx: commands.Context):
     """คำสั่งตั้งค่าระบบต้อนรับสมาชิกใหม่แนวน่ารักๆ"""
+    if await is_duplicate_bot_message(ctx):
+        return
     try:
         await ctx.message.delete()
     except Exception:
@@ -3429,6 +3473,8 @@ async def setlink_cmd_error(ctx: commands.Context, error):
 @commands.cooldown(1, 3.0, commands.BucketType.user)
 async def setuprole_cmd(ctx: commands.Context, role: discord.Role | None = None):
     """คำสั่งสร้างการ์ดรับยศ: มีให้เลือกระหว่างแบบหมูหมู หรือ แบบยืนยันสิทธิ์ Verify (Wraith)"""
+    if await is_duplicate_bot_message(ctx):
+        return
     try:
         await ctx.message.delete()
     except Exception:
@@ -4060,6 +4106,8 @@ class OpenTicketSetupView(discord.ui.View):
 @commands.cooldown(1, 3.0, commands.BucketType.user)
 async def setupticket_cmd(ctx: commands.Context):
     """คำสั่งตั้งค่าและโพสต์การ์ดตั๋วช่วยเหลือ Ticket (แบบ SAKURA MODS)"""
+    if await is_duplicate_bot_message(ctx):
+        return
     try:
         await ctx.message.delete()
     except Exception:
@@ -4522,6 +4570,8 @@ def start_voice_247_task():
 @commands.cooldown(1, 3.0, commands.BucketType.user)
 async def voicechat_cmd(ctx: commands.Context):
     """คำสั่งเปิดเมนูตั้งค่า Voice 24/7 (ออนห้องเสียงตลอดเวลา)"""
+    if await is_duplicate_bot_message(ctx):
+        return
     try:
         await ctx.message.delete()
     except Exception:
@@ -4555,6 +4605,8 @@ async def voicechat_slash(interaction: discord.Interaction):
 @commands.cooldown(1, 3.0, commands.BucketType.user)
 async def help_cmd(ctx: commands.Context):
     """คำสั่งดูคู่มือและคำสั่งทั้งหมดของบอท: !help"""
+    if await is_duplicate_bot_message(ctx):
+        return
     try:
         await ctx.message.delete()
     except Exception:
