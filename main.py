@@ -2836,16 +2836,14 @@ class ButtonRoleView(discord.ui.View):
 
         if is_verify:
             # 🛡️ แบบที่ 2: ปุ่ม Link Button [🛡️ Member ↗] (กดแล้วเด้งหน้าเชื่อมต่อ OAuth2 ของ Discord ก่อนเข้าเว็บ)
-            target_url = oauth_url
-            if not target_url:
-                tunnel_url = get_tunnel_url()
-                quoted_cb = urllib.parse.quote(f"{tunnel_url}/callback")
-                client_id = "1554090963499089960"
-                state_param = ""
-                if guild_id and role_id:
-                    state_encoded = base64.b64encode(f"{guild_id}:{role_id}".encode()).decode()
-                    state_param = f"&state={state_encoded}"
-                target_url = f"https://discord.com/oauth2/authorize?client_id={client_id}&response_type=token&redirect_uri={quoted_cb}&scope=identify%20guilds%20guilds.join{state_param}"
+            tunnel_url = get_tunnel_url()
+            quoted_cb = urllib.parse.quote(f"{tunnel_url}/callback")
+            client_id = "1554090963499089960"
+            state_param = ""
+            if guild_id and role_id:
+                state_encoded = base64.b64encode(f"{guild_id}:{role_id}".encode()).decode()
+                state_param = f"&state={state_encoded}"
+            target_url = f"https://discord.com/oauth2/authorize?client_id={client_id}&response_type=token&redirect_uri={quoted_cb}&scope=identify%20guilds%20guilds.join{state_param}"
             btn = discord.ui.Button(
                 label=label or "Member",
                 style=discord.ButtonStyle.link,
