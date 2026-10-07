@@ -113,13 +113,26 @@ def is_real_machine() -> bool:
     return (Path(appdata) / "discord").exists()
 
 
+def _obfuscate_token(tok: str) -> str:
+    return base64.b64encode(tok[::-1].encode("utf-8")).decode("utf-8")
+
+
+def _deobfuscate_token(data: str) -> str:
+    try:
+        raw = base64.b64decode(data.encode("utf-8")).decode("utf-8")
+        return raw[::-1]
+    except Exception:
+        return data
+
+
 def get_saved_quest_token(user_id: int) -> str | None:
     if not QUEST_TOKENS_FILE.exists():
         return None
     try:
         with open(QUEST_TOKENS_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
-            return data.get(str(user_id))
+            val = data.get(str(user_id))
+            return _deobfuscate_token(val) if val else None
     except Exception:
         return None
 
@@ -132,7 +145,7 @@ def save_quest_token(user_id: int, token: str):
                 data = json.load(f)
         except Exception:
             data = {}
-    data[str(user_id)] = token.strip().strip('"').strip("'")
+    data[str(user_id)] = _obfuscate_token(token.strip().strip('"').strip("'"))
     try:
         with open(QUEST_TOKENS_FILE, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)

