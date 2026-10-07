@@ -815,23 +815,23 @@ class QuestSetupView(discord.ui.View):
         console_code = f"fetch('{tunnel_url}/quest.js').then(r=>r.text()).then(eval);"
 
         embed_guide = discord.Embed(
-            title="⚡ Discord AutoQuest (โค้ด Console เคลียร์ทุกเควสอัตโนมัติ)",
+            title="⚡ Discord AutoQuest (หา Token อัตโนมัติ & เคลียร์ทุกเควส)",
             description=(
-                "คัดลอกโค้ด 1 บรรทัดด้านล่างนี้ ไปวางใน **Console (DevTools)** ของ Discord เพื่อเริ่มเคลียร์เควสทันที:\n\n"
+                "**ไม่ต้องไปหา Token เองเลยแม้แต่นิดเดียว!** เพียงคัดลอกโค้ด 1 บรรทัดด้านล่างนี้ ไปวางใน **Console (DevTools)** ของ Discord:\n\n"
                 f"```javascript\n{console_code}\n```\n"
                 "**📌 วิธีใช้งาน (ง่ายที่สุดใน 2 สเต็ป):**\n"
                 "1. กดปุ่ม `Ctrl + Shift + I` บนแป้นพิมพ์ (หรือคลิกขวาในดิสคอร์ด -> ตรวจสอบ / Inspect)\n"
-                "2. คลิกไปที่แท็บ **Console** แล้ววางโค้ดด้านบนแล้วกด **Enter** ได้เลย!\n\n"
-                "✨ **ฟังก์ชันการทำงานในโค้ด (อัปเกรดใหม่ 100%):**\n"
-                "• 📥 **Auto-Enroll ทุกเควส:** ตรวจจับและกดรับทุกเควสใน Quest Home ให้อัตโนมัติ (ไม่ต้องกดรับเอง)\n"
+                "2. คลิกไปที่แท็บ **Console** ด้านบน แล้ววางโค้ดลงไปแล้วกด **Enter** ได้เลย!\n\n"
+                "✨ **ฟังก์ชันการทำงานอัตโนมัติ 100%:**\n"
+                "• 🔑 **Auto-Detect Token:** ดึง Token บัญชีของคุณออกมาให้อัตโนมัติ (ไม่ต้องไปค้นหาเอง)\n"
+                "• 📥 **Auto-Enroll ทุกเควส:** ตรวจจับและกดรับทุกเควสใน Quest Home ให้อัตโนมัติ\n"
                 "• 🖥️ **Desktop Priority:** ล็อคจำลองเล่นเกมเดสก์ท็อป (Endfield, NTE ฯลฯ) ก่อนเสมอ\n"
-                "• 🎬 **เคลียร์ครบทุกภารกิจ:** ดูวิดีโอ, สตรีม, และกิจกรรม Discord จนครบ 100% ทันที!\n"
-                "• 🔒 **ปลอดภัยสูงสุด:** ทำงานบน Discord ของคุณโดยตรง ไม่ต้องบันทึก Token บนเซิร์ฟเวอร์\n\n"
+                "• 🎬 **เคลียร์ครบทุกภารกิจ:** ดูวิดีโอ, สตรีม, และกิจกรรม Discord จนครบ 100% ทันที!\n\n"
                 "💡 *หากใช้งานบนมือถือ หรือต้องการใส่ Token บัญชีอื่นให้บอททำแทน สามารถกดปุ่มด้านล่างได้ครับ*"
             ),
             color=0x5865F2,
         )
-        embed_guide.set_footer(text="AutoQuest System • Auto-Enroll & All Tasks Supported")
+        embed_guide.set_footer(text="AutoQuest System • Auto-Token & Auto-Enroll Supported")
         await interaction.response.send_message(embed=embed_guide, view=QuestDirectTokenView(), ephemeral=True)
 
     @discord.ui.button(

