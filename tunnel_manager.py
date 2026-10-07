@@ -29,7 +29,7 @@ def get_tunnel_url() -> str:
     global _current_url
     if _current_url:
         return _current_url
-    env_url = os.getenv("PUBLIC_URL") or os.getenv("HOSTING_URL")
+    env_url = os.getenv("PUBLIC_URL") or os.getenv("RENDER_EXTERNAL_URL") or os.getenv("HOSTING_URL")
     if env_url and env_url.strip().startswith("http"):
         _current_url = env_url.strip().rstrip("/")
         return _current_url
@@ -41,7 +41,7 @@ def get_tunnel_url() -> str:
                 return _current_url
         except Exception:
             pass
-    return "https://starring-proud-dealers-expanded.trycloudflare.com"
+    return "https://5bpobot.onrender.com"
 
 
 def set_tunnel_url(new_url: str) -> str:

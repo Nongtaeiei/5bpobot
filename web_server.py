@@ -484,14 +484,20 @@ async def setup_web_app(discord_bot) -> web.Application:
 
 
 async def start_web_server(discord_bot, host: str = "0.0.0.0", port: int = None):
-    if port is None:
-        port = int(os.environ.get("PORT", 5000))
+    env_port = os.environ.get("PORT")
+    if env_port:
+        try:
+            port = int(env_port)
+        except Exception:
+            pass
+    if not port:
+        port = 5000
     app = await setup_web_app(discord_bot)
     runner = web.AppRunner(app)
     await runner.setup()
     site = web.TCPSite(runner, host, port)
     try:
         await site.start()
-        print(f"🌐 [WEB SERVER] Running on http://127.0.0.1:{port} (Dashboard: http://127.0.0.1:{port}/dashboard)", flush=True)
+        print(f"🌐 [WEB SERVER] Running on port {port} (Dashboard: /dashboard)", flush=True)
     except Exception as e:
         print(f"⚠️ [WEB SERVER ERROR] Could not bind to port {port}: {e}", flush=True)

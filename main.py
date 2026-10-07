@@ -2819,7 +2819,8 @@ def save_button_role_config(data: dict):
 
 # ---- LOCAL HTTP & OAUTH SERVER ----
 async def start_verify_web_server(discord_bot):
-    await web_server.start_web_server(discord_bot, host="0.0.0.0", port=5000)
+    port = int(os.getenv("PORT", 5000))
+    await web_server.start_web_server(discord_bot, host="0.0.0.0", port=port)
 
 
 class ButtonRoleView(discord.ui.View):
