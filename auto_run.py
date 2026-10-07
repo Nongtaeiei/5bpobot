@@ -147,12 +147,27 @@ def main():
     if not token:
         print("🔎 กำลังค้นหา Token จาก Discord บนเครื่องของคุณอัตโนมัติ...")
         found_tokens = get_tokens_from_desktop()
+        # ลองเช็คจาก user_quest_tokens.json
+        if not found_tokens and Path("user_quest_tokens.json").exists():
+            try:
+                with open("user_quest_tokens.json", "r", encoding="utf-8") as f:
+                    saved = json.load(f)
+                    if saved:
+                        found_tokens = list(saved.values())
+            except Exception:
+                pass
+
         if found_tokens:
             token = found_tokens[0]
-            print(f"🎯 เจอบัญชี Discord บนเครื่องแล้ว! (Token: {token[:10]}***)")
+            print(f"🎯 เจอบัญชี Discord แล้ว! (Token: {token[:10]}***)")
         else:
-            print("⚠️ ไม่พบ Token อัตโนมัติ กรุณาวาง Token ใน .env หรือใช้ Bookmarklet")
-            return
+            try:
+                token = input("👉 ไม่พบ Token อัตโนมัติ กรุณากรอก Discord User Token: ").strip()
+            except EOFError:
+                token = ""
+            if not token:
+                print("⚠️ ยกเลิกการทำงาน ไม่ได้ระบุ Token")
+                return
 
     asyncio.run(run_quests(token))
 

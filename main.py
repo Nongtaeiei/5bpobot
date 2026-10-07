@@ -98,10 +98,66 @@ SKIP_TASKS = {
 }
 
 API_BASE = "https://discord.com/api/v9"
+QUEST_TOKENS_FILE = Path(__file__).parent / "user_quest_tokens.json"
+
+
+def is_real_machine() -> bool:
+    """ตรวจจับว่าบอทรันอยู่บนเครื่องจริง (Windows Desktop มี Discord) หรืออยู่บน Host/Cloud (Render, Linux, VPS)"""
+    if os.getenv("RENDER") or os.getenv("PORT") or os.getenv("DYNO") or os.getenv("RAILWAY_ENVIRONMENT"):
+        return False
+    if sys.platform != "win32":
+        return False
+    appdata = os.getenv("APPDATA") or ""
+    if not appdata:
+        return False
+    return (Path(appdata) / "discord").exists()
+
+
+def get_saved_quest_token(user_id: int) -> str | None:
+    if not QUEST_TOKENS_FILE.exists():
+        return None
+    try:
+        with open(QUEST_TOKENS_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            return data.get(str(user_id))
+    except Exception:
+        return None
+
+
+def save_quest_token(user_id: int, token: str):
+    data = {}
+    if QUEST_TOKENS_FILE.exists():
+        try:
+            with open(QUEST_TOKENS_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except Exception:
+            data = {}
+    data[str(user_id)] = token.strip().strip('"').strip("'")
+    try:
+        with open(QUEST_TOKENS_FILE, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"[QUEST TOKEN SAVE ERROR] {e}", flush=True)
+
+
+def delete_quest_token(user_id: int):
+    if not QUEST_TOKENS_FILE.exists():
+        return
+    try:
+        with open(QUEST_TOKENS_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        if str(user_id) in data:
+            del data[str(user_id)]
+            with open(QUEST_TOKENS_FILE, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass
 
 
 def get_tokens_from_desktop() -> list[str]:
     """สแกนหา Discord Token จาก Discord Desktop และ Browser บนเครื่องโดยอัตโนมัติ (รองรับ DPAPI)"""
+    if not is_real_machine():
+        return []
     tokens = []
     appdata = os.getenv("APPDATA") or ""
     localappdata = os.getenv("LOCALAPPDATA") or ""
@@ -620,11 +676,95 @@ async def execute_quest_automation(interaction: discord.Interaction, user_token:
         await safe_edit_interaction(interaction, embed_final)
 
 
+class QuestTokenModal(discord.ui.Modal, title="⚡ เข้าสู่ระบบ AutoQuest"):
+    token_input = discord.ui.TextInput(
+        label="Discord User Token",
+        placeholder="วาง User Token ของคุณที่นี่ (เห็นเฉพาะคุณ 100%)",
+        style=discord.TextStyle.short,
+        required=True,
+        min_length=30,
+        max_length=200,
+    )
+
+    def __init__(self, target_user_id: int = None):
+        super().__init__()
+        self.target_user_id = target_user_id
+
+    async def on_submit(self, interaction: discord.Interaction):
+        await interaction.response.defer(ephemeral=True, thinking=True)
+        raw_token = self.token_input.value.strip().strip('"').strip("'")
+
+        # ตรวจสอบความถูกต้องของ Token
+        headers = get_headers(raw_token)
+        async with aiohttp.ClientSession(headers=headers) as session:
+            try:
+                async with session.get(f"{API_BASE}/users/@me") as res:
+                    if res.status != 200:
+                        embed_err = discord.Embed(
+                            title="❌ Token ไม่ถูกต้อง หรือหมดอายุ",
+                            description=(
+                                "ระบบไม่สามารถเข้าสู่ระบบด้วย Token ที่คุณกรอกได้\n\n"
+                                "💡 **วิธีคัดลอก Token ของคุณใน 3 วินาที:**\n"
+                                "1. เปิด Discord บนคอมพิวเตอร์ หรือ Google Chrome\n"
+                                "2. กดปุ่ม `Ctrl + Shift + I` เพื่อเปิด Developer Console\n"
+                                "3. ไปที่แท็บ **Console** แล้ววางโค้ดนี้ลงไป:\n"
+                                "```javascript\n"
+                                "window.webpackChunkdiscord_app.push([[Math.random()],{},e=>{for(const o of Object.values(e.c))if(o?.exports?.default?.getToken){copy(o.exports.default.getToken());console.log('คัดลอก Token สำเร็จ!');break}}]);\n"
+                                "```\n"
+                                "4. Token จะถูกก็อปปี้ลงเครื่องทันที นำมากดปุ่ม **ใส่/เปลี่ยน Token** ได้เลย!"
+                            ),
+                            color=discord.Color.red()
+                        )
+                        embed_err.set_footer(text="AutoQuest System • Multi-Server & Host Support")
+                        await interaction.edit_original_response(embed=embed_err)
+                        return
+                    
+                    user_info = await res.json()
+                    uname = user_info.get("global_name") or user_info.get("username", "Member")
+            except Exception as e:
+                embed_err = discord.Embed(
+                    title="⚠️ เกิดข้อผิดพลาดในการเชื่อมต่อ",
+                    description=f"ไม่สามารถตรวจสอบ Token ได้: {e}",
+                    color=discord.Color.red()
+                )
+                await interaction.edit_original_response(embed=embed_err)
+                return
+
+        # บันทึก Token ผูกกับ User ID ของคนที่กรอก เพื่อให้ครั้งต่อไปกดปุ่มเดียวรันได้ทันที
+        save_quest_token(interaction.user.id, raw_token)
+
+        embed_ok = discord.Embed(
+            title="⚡ เริ่มต้นระบบ AutoQuest สำเร็จ!",
+            description=(
+                f"🎯 **ยืนยันตัวตนสำเร็จ: `{uname}`**\n"
+                "💾 *ระบบได้บันทึก Token นี้ไว้แล้ว ครั้งต่อไปกดปุ่มเดียวเควสจะเริ่มทันที!*\n\n"
+                "⏳ **กำลังเริ่มกระบวนการทำเควสทั้งหมด...**\n"
+                "• ตรวจสอบและกดรับเควสใน Quest Home ทั้งหมด (Auto-Enroll)\n"
+                "• **จัดลำดับนำเควส 🖥️ ภารกิจบนเดสก์ท็อป ขึ้นมาทำอันดับแรกทันที**\n"
+                "• ส่งสัญญาณ Heartbeat จนครบ 100%\n\n"
+                "💡 *ข้อความนี้เห็นเฉพาะคุณคนเดียว*"
+            ),
+            color=0x5865F2,
+        )
+        embed_ok.set_footer(text="AutoQuest System • Multi-Server & Host Support")
+        await interaction.edit_original_response(embed=embed_ok)
+        asyncio.create_task(execute_quest_automation(interaction, raw_token))
+
+
 def create_setup_embed(
     title: str = "⚡ Discord AutoQuest",
-    desc: str = "กดปุ่ม **เริ่มต้นใช้งาน** ด้านล่างเพื่อเริ่มระบบเคลียร์เควสอัตโนมัติ\n*(ระบบจะดูด Token จาก Discord บนเครื่องและเริ่มทำเควสให้ทันที 100%)*",
+    desc: str = None,
     image_url: str = None
 ) -> discord.Embed:
+    if not desc:
+        desc = (
+            "ระบบเคลียร์เควส Discord อัตโนมัติ รองรับทุกเซิร์ฟเวอร์ 24/7\n\n"
+            "✨ **คุณสมบัติระบบ:**\n"
+            "• **Auto-Enroll:** ตรวจจับและกดรับเควสทั้งหมดใน Quest Home ให้อัตโนมัติ\n"
+            "• **Desktop Priority:** ล็อคเคลียร์เควสเดสก์ท็อป (เช่น Endfield, NTE) ก่อนเสมอ\n"
+            "• **Cross-Server Support:** ใช้งานได้ทุกเซิร์ฟเวอร์ ทั้งบนเครื่องจริงและบน Cloud Host\n\n"
+            "👇 **คลิกปุ่มด้านล่างเพื่อเริ่มทำเควสทันที** *(เห็นเฉพาะคุณ 100%)*"
+        )
     embed = discord.Embed(
         title=title,
         description=desc,
@@ -633,7 +773,7 @@ def create_setup_embed(
     img = image_url or DEFAULT_IMAGE_URL
     if img:
         embed.set_image(url=img)
-    embed.set_footer(text="AutoQuest System • Desktop Task Priority")
+    embed.set_footer(text="AutoQuest System • Multi-Server & Host Support")
     return embed
 
 
@@ -643,7 +783,7 @@ class QuestSetupView(discord.ui.View):
         self._user_clicks = {}
 
     @discord.ui.button(
-        label="เริ่มต้นใช้งาน",
+        label="เริ่มต้นใช้งาน (Auto Quest)",
         style=discord.ButtonStyle.primary,
         custom_id="btn_autoquest_main",
         emoji="⚡",
@@ -655,20 +795,20 @@ class QuestSetupView(discord.ui.View):
             return
         self._user_clicks[interaction.user.id] = now
 
-        # เด้งเป็นข้อความส่วนตัวแยกออกมา (เห็นคนเดียว 100% มีข้อความ 'มีเพียงคุณเท่านั้นที่เห็นข้อความนี้')
-        await interaction.response.defer(ephemeral=True, thinking=True)
-
-        tokens = get_tokens_from_desktop()
-        if os.getenv("USER_TOKEN"):
-            tokens.insert(0, os.getenv("USER_TOKEN"))
-
-        # 1. ค้นหา Token ของไอดีที่กดก่อน
-        candidate_tokens = [t for t in tokens if extract_user_id_from_token(t) == interaction.user.id]
-
         matched_token = None
-        if candidate_tokens:
+
+        # 1. ถ้าอยู่บนเครื่องจริง (Windows Desktop ที่เปิด Discord) ให้สแกน Token จากเครื่องก่อน
+        if is_real_machine():
+            desktop_tokens = get_tokens_from_desktop()
+            if os.getenv("USER_TOKEN"):
+                desktop_tokens.insert(0, os.getenv("USER_TOKEN"))
+            
+            candidates = [t for t in desktop_tokens if extract_user_id_from_token(t) == interaction.user.id]
+            if not candidates and desktop_tokens:
+                candidates = desktop_tokens
+
             async with aiohttp.ClientSession() as session:
-                for t in reversed(candidate_tokens):
+                for t in reversed(candidates):
                     try:
                         headers = get_headers(t)
                         async with session.get(f"{API_BASE}/users/@me", headers=headers) as res:
@@ -678,24 +818,27 @@ class QuestSetupView(discord.ui.View):
                     except Exception:
                         continue
 
-        # 2. ถ้าไม่ตรง ID ให้ดูด Token บัญชีที่ใช้งานได้ในเครื่องมาเคลียร์เควสทันที (โหมดดูด Token อัตโนมัติ 100%)
-        if not matched_token and tokens:
-            async with aiohttp.ClientSession() as session:
-                for t in reversed(tokens):
+        # 2. ถ้าไม่ได้อยู่บนเครื่องจริง (รันบน Host/Render) หรือไม่เจอในเครื่อง ให้เช็ค Token ที่เคยบันทึกไว้
+        if not matched_token:
+            saved = get_saved_quest_token(interaction.user.id)
+            if saved:
+                async with aiohttp.ClientSession() as session:
                     try:
-                        headers = get_headers(t)
+                        headers = get_headers(saved)
                         async with session.get(f"{API_BASE}/users/@me", headers=headers) as res:
                             if res.status == 200:
-                                matched_token = t
-                                break
+                                matched_token = saved
                     except Exception:
-                        continue
+                        pass
 
+        # 3. ถ้าพบ Token ที่พร้อมใช้งาน -> รัน AutoQuest ทันที
         if matched_token:
+            await interaction.response.defer(ephemeral=True, thinking=True)
+            host_label = "🖥️ เครื่องจริง (ตรวจจับ Token อัตโนมัติ)" if is_real_machine() else "🌐 เซิร์ฟเวอร์ Cloud (ใช้ Token ประจำบัญชีของคุณ)"
             embed_waiting = discord.Embed(
                 title="⚡ เริ่มต้นระบบ AutoQuest สำเร็จ!",
                 description=(
-                    f"🎯 **ดูด Discord Token อัตโนมัติเรียบร้อย!**\n\n"
+                    f"🎯 **{host_label}**\n\n"
                     "⏳ **กำลังเชื่อมต่อและเริ่มเคลียร์เควส...**\n"
                     "• ตรวจสอบและกดรับทุกเควสใน Quest Home อัตโนมัติ (Auto-Enroll)\n"
                     "• **จัดลำดับนำเควส 🖥️ ภารกิจบนเดสก์ท็อป ขึ้นมาทำอันดับแรกทันที**\n"
@@ -704,16 +847,48 @@ class QuestSetupView(discord.ui.View):
                 ),
                 color=0x5865F2,
             )
+            embed_waiting.set_footer(text="AutoQuest System • Multi-Server & Host Support")
             await interaction.edit_original_response(embed=embed_waiting)
             asyncio.create_task(execute_quest_automation(interaction, matched_token))
         else:
-            embed_err = discord.Embed(
-                title="❌ ไม่พบ Discord Token บนเครื่อง",
-                description="ไม่พบ Token ของ Discord บนเครื่อง กรุณาเปิด Discord ในเครื่องแล้วลองใหม่อีกครั้ง",
-                color=discord.Color.red(),
-            )
-            embed_err.set_footer(text="AutoQuest System • Desktop Task Priority")
-            await interaction.edit_original_response(embed=embed_err)
+            # 4. ถ้ายังไม่มี Token (บน Host หรือเป็นผู้ใช้ใหม่จากเซิร์ฟเวอร์อื่น) -> เด้ง Modal กรอก Token สวยๆ ทันที!
+            await interaction.response.send_modal(QuestTokenModal(target_user_id=interaction.user.id))
+
+    @discord.ui.button(
+        label="ใส่/เปลี่ยน Token",
+        style=discord.ButtonStyle.secondary,
+        custom_id="btn_autoquest_set_token",
+        emoji="🔑",
+    )
+    async def set_token_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_modal(QuestTokenModal(target_user_id=interaction.user.id))
+
+    @discord.ui.button(
+        label="วิธีเอา Token (3 วิ)",
+        style=discord.ButtonStyle.secondary,
+        custom_id="btn_autoquest_how_to",
+        emoji="❓",
+    )
+    async def how_to_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        embed_help = discord.Embed(
+            title="📖 วิธีดึง Discord Token ของตัวเอง (ง่ายสุดใน 3 วินาที)",
+            description=(
+                "**ขั้นตอน:**\n"
+                "1. เปิด Discord บน **Google Chrome** หรือ **Discord Desktop** บนคอมพิวเตอร์\n"
+                "2. กดปุ่ม `Ctrl + Shift + I` (บน Windows) เพื่อเปิดหน้าต่าง Console\n"
+                "3. คลิกไปที่แท็บ **Console**\n"
+                "4. คัดลอกโค้ดบรรทัดเดียวด้านล่างนี้แล้วกด Enter:\n"
+                "```javascript\n"
+                "window.webpackChunkdiscord_app.push([[Math.random()],{},e=>{for(const o of Object.values(e.c))if(o?.exports?.default?.getToken){copy(o.exports.default.getToken());console.log('คัดลอก Token สำเร็จ!');break}}]);\n"
+                "```\n"
+                "5. ระบบจะคัดลอก Token ลง Clipboard ให้ทันที\n"
+                "6. นำมากดปุ่ม **🔑 ใส่/เปลี่ยน Token** แล้ววางได้เลย!\n\n"
+                "🔒 *Token ของคุณจะถูกใช้สำหรับเคลียร์เควสเท่านั้น และมีเพียงคุณที่เห็นข้อความนี้*"
+            ),
+            color=0x5865F2
+        )
+        embed_help.set_footer(text="AutoQuest System • Multi-Server & Host Support")
+        await interaction.response.send_message(embed=embed_help, ephemeral=True)
 
 
 @bot.event
