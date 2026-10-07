@@ -740,10 +740,12 @@ async def on_ready():
 
     asyncio.create_task(start_verify_web_server(bot))
 
-    try:
-        start_voice_247_task()
-    except Exception as e:
-        print(f"[VOICE 24/7 INIT ERROR] {e}", flush=True)
+    # ไม่ให้บอทออโต้ลงห้องเสียงเองตอนเริ่มระบบ (จะลงเฉพาะตอนสั่งผ่าน !voicechat เท่านั้น)
+    for vc in bot.voice_clients:
+        try:
+            await vc.disconnect(force=True)
+        except Exception:
+            pass
 
     try:
         synced = await bot.tree.sync()
@@ -4233,6 +4235,9 @@ class Voice247SelectChannelView(discord.ui.View):
                 await interaction.delete_original_response()
             except Exception:
                 pass
+
+        # เริ่มระบบเฝ้าห้องเสียง 24/7 เฉพาะหลังจากกดยืนยันแล้วเท่านั้น
+        start_voice_247_task()
 
         # แจ้งเตือนแบบเห็นคนเดียวให้แอดมินทราบ
         if connected_ok:
