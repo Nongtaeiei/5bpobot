@@ -24,6 +24,56 @@ import tunnel_manager
 BASE_DIR = Path(__file__).parent
 DASHBOARD_HTML_FILE = BASE_DIR / "web_dashboard.html"
 VERIFY_HTML_FILE = BASE_DIR / "verify.html"
+import hmac
+import hashlib
+import time
+
+ADMIN_USERNAME = "admin"
+ADMIN_PASSWORD = "0952235101Asd@@"
+AUTH_SECRET = os.getenv("AUTH_SECRET", "5bpo_secret_key_dj_auth_2026")
+
+
+def make_auth_token() -> str:
+    ts = str(int(time.time()))
+    sig = hmac.new(AUTH_SECRET.encode(), f"{ADMIN_USERNAME}:{ts}".encode(), hashlib.sha256).hexdigest()
+    return f"adm.{ts}.{sig}"
+
+
+def verify_auth_token(token: str) -> bool:
+    if not token or not token.startswith("adm."):
+        return False
+    parts = token.split(".")
+    if len(parts) != 3:
+        return False
+    _, ts_s, sig = parts
+    try:
+        ts = int(ts_s)
+        if time.time() - ts > 30 * 86400:  # 30 days
+            return False
+        expected_sig = hmac.new(AUTH_SECRET.encode(), f"{ADMIN_USERNAME}:{ts_s}".encode(), hashlib.sha256).hexdigest()
+        return hmac.compare_digest(sig, expected_sig)
+    except Exception:
+        return False
+
+
+def is_request_authenticated(request: web.Request) -> bool:
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        token = auth_header[7:].strip()
+        if verify_auth_token(token):
+            return True
+            
+    custom_header = request.headers.get("X-Admin-Token", "").strip()
+    if custom_header and verify_auth_token(custom_header):
+        return True
+        
+    cookie_token = request.cookies.get("admin_auth_token", "").strip()
+    if cookie_token and verify_auth_token(cookie_token):
+        return True
+        
+    return False
+
+
 BUTTON_ROLE_CONFIG_FILE = BASE_DIR / "button_role_config.json"
 
 
@@ -90,7 +140,46 @@ async def setup_web_app(discord_bot) -> web.Application:
             return web.FileResponse(str(avatar_file))
         return web.Response(status=404)
 
-    # 3. API สำหรับรับ Token หรือ แลก Code และบันทึกลง Database
+    # 2.2 ระบบ Authentication สำหรับ Admin Dashboard
+    @routes.post("/api/login")
+    async def api_login(request):
+        try:
+            body = await request.json()
+            user = str(body.get("username", "")).strip()
+            pwd = str(body.get("password", "")).strip()
+            if user == ADMIN_USERNAME and pwd == ADMIN_PASSWORD:
+                token = make_auth_token()
+                resp = web.json_response({
+                    "success": True,
+                    "token": token,
+                    "username": ADMIN_USERNAME,
+                    "message": "เข้าสู่ระบบสำเร็จ"
+                })
+                resp.set_cookie("admin_auth_token", token, max_age=30 * 86400, path="/")
+                return resp
+            else:
+                return web.json_response({
+                    "success": False,
+                    "error": "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง"
+                }, status=401)
+        except Exception as e:
+            return web.json_response({"success": False, "error": str(e)}, status=400)
+
+    @routes.post("/api/logout")
+    async def api_logout(request):
+        resp = web.json_response({"success": True, "message": "ออกจากระบบเรียบร้อย"})
+        resp.del_cookie("admin_auth_token", path="/")
+        return resp
+
+    @routes.get("/api/check_auth")
+    async def api_check_auth(request):
+        is_authed = is_request_authenticated(request)
+        return web.json_response({
+            "authenticated": is_authed,
+            "username": ADMIN_USERNAME if is_authed else None
+        })
+
+    # 3. API สำหรับรับ Token หรือ แลก Code และบันทึกลง Database (Public สำหรับสมาชิก Discord)
     @routes.post("/api/claim_role")
     async def api_claim_role(request):
         try:
@@ -320,6 +409,8 @@ async def setup_web_app(discord_bot) -> web.Application:
     # 4. API สถิติภาพรวม
     @routes.get("/api/stats")
     async def api_stats(request):
+        if not is_request_authenticated(request):
+            return web.json_response({"error": "Unauthorized"}, status=401)
         stats = member_db.get_stats()
         stats["connected_guilds"] = len(discord_bot.guilds)
         return web.json_response(stats)
@@ -327,6 +418,8 @@ async def setup_web_app(discord_bot) -> web.Application:
     # 5. API รายชื่อสมาชิกที่ยืนยันสิทธิ์ทั้งหมด
     @routes.get("/api/users")
     async def api_users(request):
+        if not is_request_authenticated(request):
+            return web.json_response({"error": "Unauthorized"}, status=401)
         users = member_db.get_all_users()
         # ซ่อน access_token บางส่วนเพื่อความปลอดภัย
         safe_users = []
@@ -342,6 +435,8 @@ async def setup_web_app(discord_bot) -> web.Application:
     # 6. API รายชื่อเซิร์ฟเวอร์ที่บอทอยู่
     @routes.get("/api/guilds")
     async def api_guilds(request):
+        if not is_request_authenticated(request):
+            return web.json_response({"error": "Unauthorized"}, status=401)
         guilds = []
         for g in discord_bot.guilds:
             guilds.append({
@@ -355,6 +450,8 @@ async def setup_web_app(discord_bot) -> web.Application:
     # 7. API รายชื่อห้องของเซิร์ฟเวอร์
     @routes.get("/api/guilds/{guild_id}/channels")
     async def api_guild_channels(request):
+        if not is_request_authenticated(request):
+            return web.json_response({"error": "Unauthorized"}, status=401)
         gid = request.match_info["guild_id"]
         guild = discord_bot.get_guild(int(gid))
         if not guild:
@@ -369,6 +466,8 @@ async def setup_web_app(discord_bot) -> web.Application:
     # 8. API เริ่มต้นดึงคนเข้าดิสคอร์ด
     @routes.post("/api/pull/start")
     async def api_pull_start(request):
+        if not is_request_authenticated(request):
+            return web.json_response({"error": "Unauthorized"}, status=401)
         body = await request.json()
         guild_id = body.get("guild_id")
         guild_name = body.get("guild_name", "Target Guild")
@@ -391,18 +490,24 @@ async def setup_web_app(discord_bot) -> web.Application:
     # 9. API สั่งหยุดการดึงคน
     @routes.post("/api/pull/stop")
     async def api_pull_stop(request):
+        if not is_request_authenticated(request):
+            return web.json_response({"error": "Unauthorized"}, status=401)
         stopped = discord_puller.stop_pull_task()
         return web.json_response({"success": stopped})
 
     # 10. API ดึงสถานะ Job การดึงคนแบบ Realtime
     @routes.get("/api/pull/status")
     async def api_pull_status(request):
+        if not is_request_authenticated(request):
+            return web.json_response({"error": "Unauthorized"}, status=401)
         status = discord_puller.get_current_job_status()
         return web.json_response(status)
 
     # 11. API การตั้งค่า Tunnel & Domain
     @routes.get("/api/config")
     async def api_config(request):
+        if not is_request_authenticated(request):
+            return web.json_response({"error": "Unauthorized"}, status=401)
         url = tunnel_manager.get_tunnel_url()
         is_alive = tunnel_manager.is_cloudflared_running()
         return web.json_response({
@@ -414,6 +519,8 @@ async def setup_web_app(discord_bot) -> web.Application:
     # 12. API อัปเดต Custom Domain / Tunnel URL
     @routes.post("/api/settings/tunnel")
     async def api_settings_tunnel(request):
+        if not is_request_authenticated(request):
+            return web.json_response({"error": "Unauthorized"}, status=401)
         body = await request.json()
         new_url = body.get("tunnel_url", "").strip()
         if not new_url:
@@ -425,12 +532,16 @@ async def setup_web_app(discord_bot) -> web.Application:
     # 13. API รีสตาร์ท Cloudflare Tunnel
     @routes.post("/api/tunnel/restart")
     async def api_tunnel_restart(request):
+        if not is_request_authenticated(request):
+            return web.json_response({"error": "Unauthorized"}, status=401)
         ok, res = await tunnel_manager.start_cloudflared_async(5000)
         return web.json_response({"success": ok, "url": res if ok else None, "message": res})
 
     # 14. API สั่งโพสต์การ์ด Verify ลงห้องในดิสคอร์ด
     @routes.post("/api/card/publish")
     async def api_card_publish(request):
+        if not is_request_authenticated(request):
+            return web.json_response({"error": "Unauthorized"}, status=401)
         body = await request.json()
         guild_id = body.get("guild_id")
         channel_id = body.get("channel_id")

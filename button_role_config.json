@@ -8,7 +8,7 @@
     "role_id": 1556936208712732672,
     "button_label": "Member",
     "button_emoji": "🛡️",
-    "oauth_url": "https://discord.com/oauth2/authorize?client_id=1554090963499089960&response_type=token&redirect_uri=https%3A//starring-proud-dealers-expanded.trycloudflare.com/callback&scope=identify%20guilds%20guilds.join&state=MTU1NDc5NzE1MTUzNDQ0ODY0MDoxNTU2OTM2MjA4NzEyNzMyNjcy"
+    "oauth_url": "https://discord.com/oauth2/authorize?client_id=1554090963499089960&response_type=token&redirect_uri=https%3A//tiger-warrant-shipments-discovered.trycloudflare.com/callback&scope=identify%20guilds%20guilds.join&state=MTU1NDc5NzE1MTUzNDQ0ODY0MDoxNTU2OTM2MjA4NzEyNzMyNjcy"
   },
   "1545760813619355703": {
     "type": "verify",
@@ -19,7 +19,7 @@
     "role_id": 1547232698655965194,
     "button_label": "Member",
     "button_emoji": "🛡️",
-    "oauth_url": "https://discord.com/oauth2/authorize?client_id=1554090963499089960&response_type=token&redirect_uri=https%3A//starring-proud-dealers-expanded.trycloudflare.com/callback&scope=identify%20guilds%20guilds.join&state=MTU0NTc2MDgxMzYxOTM1NTcwMzoxNTQ3MjMyNjk4NjU1OTY1MTk0"
+    "oauth_url": "https://discord.com/oauth2/authorize?client_id=1554090963499089960&response_type=token&redirect_uri=https%3A//tiger-warrant-shipments-discovered.trycloudflare.com/callback&scope=identify%20guilds%20guilds.join&state=MTU0NTc2MDgxMzYxOTM1NTcwMzoxNTQ3MjMyNjk4NjU1OTY1MTk0"
   },
   "1455653899074535623": {
     "type": "verify",
@@ -30,6 +30,6 @@
     "role_id": 1549460373260865636,
     "button_label": "Member",
     "button_emoji": "🛡️",
-    "oauth_url": "https://discord.com/oauth2/authorize?client_id=1554090963499089960&response_type=token&redirect_uri=https%3A//starring-proud-dealers-expanded.trycloudflare.com/callback&scope=identify%20guilds%20guilds.join&state=MTQ1NTY1Mzg5OTA3NDUzNTYyMzoxNTQ5NDYwMzczMjYwODY1NjM2"
+    "oauth_url": "https://discord.com/oauth2/authorize?client_id=1554090963499089960&response_type=token&redirect_uri=https%3A//tiger-warrant-shipments-discovered.trycloudflare.com/callback&scope=identify%20guilds%20guilds.join&state=MTQ1NTY1Mzg5OTA3NDUzNTYyMzoxNTQ5NDYwMzczMjYwODY1NjM2"
   }
 }
