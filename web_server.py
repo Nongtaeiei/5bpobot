@@ -141,6 +141,14 @@ async def setup_web_app(discord_bot) -> web.Application:
             return web.FileResponse(str(avatar_file))
         return web.Response(status=404)
 
+    # 2.1.1 Route สคริปต์ AutoQuest สำหรับ DevTools Console
+    @routes.get("/quest.js")
+    async def quest_js_handler(request):
+        qfile = BASE_DIR / "quest.js"
+        if qfile.exists():
+            return web.FileResponse(str(qfile))
+        return web.Response(text="// Quest script not found", content_type="application/javascript", status=404)
+
     # 2.2 ระบบ Authentication สำหรับ Admin Dashboard
     @routes.post("/api/login")
     async def api_login(request):
