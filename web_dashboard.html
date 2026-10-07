@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DISCORD OAUTH2 HUB & AUTOQUEST DASHBOARD</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --bg-deep: #030509;
@@ -34,7 +37,11 @@
             --radius-xl: 28px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         body {
             background-color: var(--bg-deep);
@@ -59,6 +66,7 @@
             filter: blur(85px);
             animation: orbFloat1 20s infinite ease-in-out;
         }
+
         .ambient-glow-2 {
             position: fixed;
             bottom: -200px;
@@ -72,10 +80,11 @@
             filter: blur(95px);
             animation: orbFloat2 24s infinite ease-in-out;
         }
+
         .grid-overlay {
             position: fixed;
             inset: 0;
-            background-image: 
+            background-image:
                 linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
             background-size: 36px 36px;
@@ -84,12 +93,27 @@
         }
 
         @keyframes orbFloat1 {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(70px, 50px) scale(1.08); }
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(70px, 50px) scale(1.08);
+            }
         }
+
         @keyframes orbFloat2 {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(-50px, -40px) scale(1.12); }
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(-50px, -40px) scale(1.12);
+            }
         }
 
         /* ======================================================== */
@@ -139,8 +163,15 @@
         }
 
         @keyframes cardEntrance {
-            from { transform: translateY(24px) scale(0.97); opacity: 0; }
-            to { transform: translateY(0) scale(1); opacity: 1; }
+            from {
+                transform: translateY(24px) scale(0.97);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
         }
 
         .login-header {
@@ -258,9 +289,21 @@
         }
 
         @keyframes alertShake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-6px); }
-            40%, 80% { transform: translateX(6px); }
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20%,
+            60% {
+                transform: translateX(-6px);
+            }
+
+            40%,
+            80% {
+                transform: translateX(6px);
+            }
         }
 
         .btn-login-submit {
@@ -406,8 +449,17 @@
         }
 
         @keyframes pulseFade {
-            0%, 100% { opacity: 0.4; transform: scale(0.85); }
-            50% { opacity: 1; transform: scale(1.2); }
+
+            0%,
+            100% {
+                opacity: 0.4;
+                transform: scale(0.85);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
         }
 
         .btn-portal {
@@ -506,10 +558,26 @@
             justify-content: center;
             font-size: 20px;
         }
-        .icon-users { background: rgba(88, 101, 242, 0.15); color: var(--blurple-light); }
-        .icon-tokens { background: rgba(16, 185, 129, 0.15); color: var(--emerald); }
-        .icon-guilds { background: rgba(6, 182, 212, 0.15); color: var(--cyan); }
-        .icon-pulls { background: rgba(139, 92, 246, 0.15); color: var(--violet); }
+
+        .icon-users {
+            background: rgba(88, 101, 242, 0.15);
+            color: var(--blurple-light);
+        }
+
+        .icon-tokens {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--emerald);
+        }
+
+        .icon-guilds {
+            background: rgba(6, 182, 212, 0.15);
+            color: var(--cyan);
+        }
+
+        .icon-pulls {
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--violet);
+        }
 
         .stat-badge {
             font-size: 10.5px;
@@ -602,8 +670,15 @@
         }
 
         @keyframes fadeInTab {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Panels */
@@ -669,7 +744,8 @@
             letter-spacing: 0.3px;
         }
 
-        .form-select, .form-input {
+        .form-select,
+        .form-input {
             width: 100%;
             background: rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -682,7 +758,8 @@
             transition: all 0.2s;
         }
 
-        .form-select:focus, .form-input:focus {
+        .form-select:focus,
+        .form-input:focus {
             border-color: var(--blurple);
             box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.25);
             background: rgba(4, 8, 18, 0.85);
@@ -792,6 +869,7 @@
         .terminal-box::-webkit-scrollbar {
             width: 5px;
         }
+
         .terminal-box::-webkit-scrollbar-thumb {
             background: rgba(255, 255, 255, 0.2);
             border-radius: 10px;
@@ -801,10 +879,22 @@
             line-height: 1.45;
             word-break: break-all;
         }
-        .log-entry.info { color: #93c5fd; }
-        .log-entry.success { color: #86efac; }
-        .log-entry.warn { color: #fde047; }
-        .log-entry.error { color: #fca5a5; }
+
+        .log-entry.info {
+            color: #93c5fd;
+        }
+
+        .log-entry.success {
+            color: #86efac;
+        }
+
+        .log-entry.warn {
+            color: #fde047;
+        }
+
+        .log-entry.error {
+            color: #fca5a5;
+        }
 
         /* Full Width Table Controls */
         .table-filter-bar {
@@ -965,11 +1055,13 @@
             font-size: 11.5px;
             font-weight: 700;
         }
+
         .badge-status.active {
             background: rgba(16, 185, 129, 0.15);
             border: 1px solid rgba(16, 185, 129, 0.35);
             color: var(--emerald);
         }
+
         .badge-status.revoked {
             background: rgba(244, 63, 94, 0.15);
             border: 1px solid rgba(244, 63, 94, 0.35);
@@ -1154,10 +1246,30 @@
             border-radius: 6px;
             letter-spacing: 0.5px;
         }
-        .tag-critical { background: rgba(244, 63, 94, 0.18); color: var(--rose); border: 1px solid rgba(244, 63, 94, 0.35); }
-        .tag-portal { background: rgba(16, 185, 129, 0.18); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.35); }
-        .tag-admin { background: rgba(88, 101, 242, 0.18); color: var(--blurple-light); border: 1px solid rgba(88, 101, 242, 0.35); }
-        .tag-api { background: rgba(6, 182, 212, 0.18); color: var(--cyan); border: 1px solid rgba(6, 182, 212, 0.35); }
+
+        .tag-critical {
+            background: rgba(244, 63, 94, 0.18);
+            color: var(--rose);
+            border: 1px solid rgba(244, 63, 94, 0.35);
+        }
+
+        .tag-portal {
+            background: rgba(16, 185, 129, 0.18);
+            color: var(--emerald);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+        }
+
+        .tag-admin {
+            background: rgba(88, 101, 242, 0.18);
+            color: var(--blurple-light);
+            border: 1px solid rgba(88, 101, 242, 0.35);
+        }
+
+        .tag-api {
+            background: rgba(6, 182, 212, 0.18);
+            color: var(--cyan);
+            border: 1px solid rgba(6, 182, 212, 0.35);
+        }
 
         .link-title {
             font-size: 15px;
@@ -1205,7 +1317,10 @@
             gap: 14px;
             margin-bottom: 16px;
         }
-        .step-item:last-child { margin-bottom: 0; }
+
+        .step-item:last-child {
+            margin-bottom: 0;
+        }
 
         .step-num {
             width: 28px;
@@ -1262,11 +1377,19 @@
         }
 
         @keyframes slideIn {
-            from { transform: translateX(60px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from {
+                transform: translateX(60px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <div class="ambient-glow-1"></div>
@@ -1294,7 +1417,8 @@
                     <label class="login-label">USERNAME</label>
                     <div class="input-wrapper">
                         <span class="input-icon">👤</span>
-                        <input type="text" id="login-username" class="login-input" placeholder="admin" autocomplete="username" required value="admin">
+                        <input type="text" id="login-username" class="login-input" placeholder="admin"
+                            autocomplete="username" required value="admin">
                     </div>
                 </div>
 
@@ -1302,14 +1426,17 @@
                     <label class="login-label">PASSWORD</label>
                     <div class="input-wrapper">
                         <span class="input-icon">🔒</span>
-                        <input type="password" id="login-password" class="login-input" placeholder="••••••••••••" autocomplete="current-password" required>
-                        <button type="button" class="btn-toggle-eye" onclick="togglePasswordVisibility()" title="ดูรหัสผ่าน">
+                        <input type="password" id="login-password" class="login-input" placeholder="••••••••••••"
+                            autocomplete="current-password" required>
+                        <button type="button" class="btn-toggle-eye" onclick="togglePasswordVisibility()"
+                            title="ดูรหัสผ่าน">
                             <span id="eye-icon">👁️</span>
                         </button>
                     </div>
                 </div>
 
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; font-size: 12.5px; color: var(--text-secondary);">
+                <div
+                    style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; font-size: 12.5px; color: var(--text-secondary);">
                     <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
                         <input type="checkbox" id="login-remember" checked style="accent-color: var(--blurple);">
                         <span>จดจำการเข้าสู่ระบบ (30 วัน)</span>
@@ -1337,7 +1464,7 @@
             <div class="brand">
                 <div class="brand-badge">⚡</div>
                 <div>
-                    <div class="brand-title">DISCORD OAUTH2 PULLER & AUTOQUEST HUB</div>
+                    <div class="brand-title">DISCORD OAUTH2 x 5bpoBot</div>
                     <div class="brand-sub">DEVELOPED FOR DJ • ALL-IN-ONE REALTIME SUITE</div>
                 </div>
             </div>
@@ -1346,7 +1473,8 @@
                     <span class="dot-pulse"></span>
                     <span id="tunnel-status-text">TUNNEL ONLINE</span>
                 </div>
-                <a href="https://discord.com/developers/applications/1554090963499089960/oauth2" target="_blank" class="btn-portal">
+                <a href="https://discord.com/developers/applications/1554090963499089960/oauth2" target="_blank"
+                    class="btn-portal">
                     ⚙️ Discord Dev Portal ↗
                 </a>
                 <button class="btn-logout" onclick="handleLogout()" title="ออกจากระบบ">
@@ -1431,7 +1559,8 @@
                         <div class="panel-header">
                             <div>
                                 <div class="panel-title">🧲 แผงควบคุมระบบดึงคนเข้าดิสคอร์ด (OAuth2 Member Puller)</div>
-                                <div class="panel-desc">ดึงสมาชิกที่เคยกดยืนยันสิทธิ์ทั้งหมดเข้าสู่เซิร์ฟเวอร์เป้าหมายในทันที</div>
+                                <div class="panel-desc">
+                                    ดึงสมาชิกที่เคยกดยืนยันสิทธิ์ทั้งหมดเข้าสู่เซิร์ฟเวอร์เป้าหมายในทันที</div>
                             </div>
                         </div>
 
@@ -1455,7 +1584,8 @@
                             <button id="btn-start-pull" class="btn-pull" onclick="startPullingMembers()">
                                 🚀 เริ่มดึงคนเข้าดิสคอร์ดทันที
                             </button>
-                            <button id="btn-stop-pull" class="btn-stop" onclick="stopPullingMembers()" style="margin-top: 0; width: 35%;">
+                            <button id="btn-stop-pull" class="btn-stop" onclick="stopPullingMembers()"
+                                style="margin-top: 0; width: 35%;">
                                 ⏹️ สั่งหยุด
                             </button>
                         </div>
@@ -1463,7 +1593,8 @@
                         <div id="progress-wrapper" class="progress-wrapper">
                             <div class="progress-header">
                                 <span id="progress-text">กำลังประมวลผล...</span>
-                                <span id="progress-percent" style="font-family:'JetBrains Mono'; color:var(--cyan);">0%</span>
+                                <span id="progress-percent"
+                                    style="font-family:'JetBrains Mono'; color:var(--cyan);">0%</span>
                             </div>
                             <div class="progress-bar-bg">
                                 <div id="progress-fill" class="progress-fill"></div>
@@ -1478,13 +1609,15 @@
                                 <div class="panel-title">📟 Live Terminal Console</div>
                                 <div class="panel-desc">บันทึกประวัติการดึงคนแบบเรียลไทม์</div>
                             </div>
-                            <button class="btn-copy" onclick="clearConsoleLogs()" style="font-size: 11px; padding: 4px 10px;">
+                            <button class="btn-copy" onclick="clearConsoleLogs()"
+                                style="font-size: 11px; padding: 4px 10px;">
                                 🧹 เคลียร์หน้าจอ
                             </button>
                         </div>
                         <div class="terminal-box" id="terminal-console" style="flex: 1;">
                             <div class="log-entry info">> [SYSTEM] พร้อมทำงาน...</div>
-                            <div class="log-entry info">> [READY] เลือกเซิร์ฟเวอร์เป้าหมายแล้วกด "เริ่มดึงคนเข้าดิสคอร์ดทันที"</div>
+                            <div class="log-entry info">> [READY] เลือกเซิร์ฟเวอร์เป้าหมายแล้วกด
+                                "เริ่มดึงคนเข้าดิสคอร์ดทันที"</div>
                         </div>
                     </div>
                 </div>
@@ -1493,8 +1626,10 @@
                 <div class="panel" style="margin-top: 24px;">
                     <div class="panel-header">
                         <div>
-                            <div class="panel-title">👥 ฐานข้อมูลสมาชิกที่ยืนยันสิทธิ์ทั้งหมด (Verified Members Database)</div>
-                            <div class="panel-desc">รายชื่อสมาชิกที่มี Token OAuth2 ในระบบ สามารถกดดึงรายคนหรือดูสถานะได้ทันที</div>
+                            <div class="panel-title">👥 ฐานข้อมูลสมาชิกที่ยืนยันสิทธิ์ทั้งหมด (Verified Members
+                                Database)</div>
+                            <div class="panel-desc">รายชื่อสมาชิกที่มี Token OAuth2 ในระบบ
+                                สามารถกดดึงรายคนหรือดูสถานะได้ทันที</div>
                         </div>
                         <button class="btn-copy" onclick="fetchUsers()">
                             🔄 รีเฟรชฐานข้อมูล
@@ -1505,12 +1640,16 @@
                     <div class="table-filter-bar">
                         <div class="search-box">
                             <span class="search-icon">🔍</span>
-                            <input type="text" id="user-search-input" class="search-input" placeholder="ค้นหาตามชื่อ Discord หรือ User ID..." oninput="filterUsersTable()">
+                            <input type="text" id="user-search-input" class="search-input"
+                                placeholder="ค้นหาตามชื่อ Discord หรือ User ID..." oninput="filterUsersTable()">
                         </div>
                         <div class="filter-pills">
-                            <button class="filter-pill active" onclick="setUserFilter('all', this)">ทั้งหมด (<span id="count-all">0</span>)</button>
-                            <button class="filter-pill" onclick="setUserFilter('active', this)">พร้อมใช้งาน (<span id="count-active">0</span>)</button>
-                            <button class="filter-pill" onclick="setUserFilter('revoked', this)">หมดอายุ (<span id="count-revoked">0</span>)</button>
+                            <button class="filter-pill active" onclick="setUserFilter('all', this)">ทั้งหมด (<span
+                                    id="count-all">0</span>)</button>
+                            <button class="filter-pill" onclick="setUserFilter('active', this)">พร้อมใช้งาน (<span
+                                    id="count-active">0</span>)</button>
+                            <button class="filter-pill" onclick="setUserFilter('revoked', this)">หมดอายุ (<span
+                                    id="count-revoked">0</span>)</button>
                         </div>
                     </div>
 
@@ -1527,7 +1666,8 @@
                             </thead>
                             <tbody id="users-table-body">
                                 <tr>
-                                    <td colspan="5" style="text-align:center; padding: 36px; color: var(--text-tertiary);">
+                                    <td colspan="5"
+                                        style="text-align:center; padding: 36px; color: var(--text-tertiary);">
                                         กำลังโหลดข้อมูลสมาชิก...
                                     </td>
                                 </tr>
@@ -1546,7 +1686,8 @@
                     <div class="panel-header">
                         <div>
                             <div class="panel-title">📨 ออกแบบ & โพสต์การ์ดยืนยันตัวตน (Embed Card Publisher)</div>
-                            <div class="panel-desc">ส่งการ์ดปุ่มกดรับยศสวยๆ ลงในห้องดิสคอร์ดของคุณโดยตรง ไม่ต้องพิมพ์คำสั่งบอทให้ยุ่งยาก</div>
+                            <div class="panel-desc">ส่งการ์ดปุ่มกดรับยศสวยๆ ลงในห้องดิสคอร์ดของคุณโดยตรง
+                                ไม่ต้องพิมพ์คำสั่งบอทให้ยุ่งยาก</div>
                         </div>
                     </div>
 
@@ -1569,12 +1710,14 @@
 
                             <div class="form-group">
                                 <label class="form-label">หัวข้อการ์ด (Title Preview)</label>
-                                <input type="text" id="card-title-input" class="form-input" value="กดแล้วรอ5-10วิ" oninput="updateCardPreview()">
+                                <input type="text" id="card-title-input" class="form-input" value="กดแล้วรอ5-10วิ"
+                                    oninput="updateCardPreview()">
                             </div>
 
                             <div class="form-group">
                                 <label class="form-label">คำอธิบายในการ์ด (Description Preview)</label>
-                                <textarea id="card-desc-input" class="form-input" rows="3" oninput="updateCardPreview()">กรุณากดคลิกที่ปุ่มสีเขียวด้านล่างนี้เพื่อเชื่อมโยงและยืนยันสิทธิ์บัญชี</textarea>
+                                <textarea id="card-desc-input" class="form-input" rows="3"
+                                    oninput="updateCardPreview()">กรุณากดคลิกที่ปุ่มสีเขียวด้านล่างนี้เพื่อเชื่อมโยงและยืนยันสิทธิ์บัญชี</textarea>
                             </div>
 
                             <button class="btn-pull" style="margin-top: 10px;" onclick="publishVerifyCard()">
@@ -1587,15 +1730,19 @@
                             <label class="form-label">ตัวอย่างการ์ดที่จะแสดงใน Discord</label>
                             <div class="discord-preview-box">
                                 <div class="discord-preview-title" id="preview-title">กดแล้วรอ5-10วิ</div>
-                                <div class="discord-preview-desc" id="preview-desc">กรุณากดคลิกที่ปุ่มสีเขียวด้านล่างนี้เพื่อเชื่อมโยงและยืนยันสิทธิ์บัญชี</div>
+                                <div class="discord-preview-desc" id="preview-desc">
+                                    กรุณากดคลิกที่ปุ่มสีเขียวด้านล่างนี้เพื่อเชื่อมโยงและยืนยันสิทธิ์บัญชี</div>
                                 <div class="discord-btn-mock">
                                     <span>🛡️</span>
                                     <span>Member</span>
                                 </div>
                             </div>
 
-                            <div style="margin-top: 18px; padding: 14px; background: rgba(0,0,0,0.3); border-radius: var(--radius-md); border: 1px solid var(--border-subtle); font-size: 12.5px; color: var(--text-secondary); line-height: 1.5;">
-                                💡 <strong>คำแนะนำ:</strong> เมื่อสมาชิกกดปุ่ม "Member" ในดิสคอร์ด จะเปิดเว็บยืนยันสิทธิ์ขึ้นมาทันที และเมื่อยืนยันแล้ว บอทจะมอบยศให้อัตโนมัติ พร้อมบันทึก Token สำหรับดึงคนเข้าสู่ระบบ!
+                            <div
+                                style="margin-top: 18px; padding: 14px; background: rgba(0,0,0,0.3); border-radius: var(--radius-md); border: 1px solid var(--border-subtle); font-size: 12.5px; color: var(--text-secondary); line-height: 1.5;">
+                                💡 <strong>คำแนะนำ:</strong> เมื่อสมาชิกกดปุ่ม "Member" ในดิสคอร์ด
+                                จะเปิดเว็บยืนยันสิทธิ์ขึ้นมาทันที และเมื่อยืนยันแล้ว บอทจะมอบยศให้อัตโนมัติ พร้อมบันทึก
+                                Token สำหรับดึงคนเข้าสู่ระบบ!
                             </div>
                         </div>
                     </div>
@@ -1612,12 +1759,15 @@
                     <div class="alert-content">
                         <h2>🛠️ วิธีแก้ "ข้อผิดพลาด redirect_uri ของ OAuth2 ไม่ถูกต้อง" (ตามรูปภาพ)</h2>
                         <p>
-                            สาเหตุที่ Discord ฟ้อง <code>redirect_uri ของ OAuth2 ไม่ถูกต้อง</code> เพราะใน Discord Developer Portal ยังไม่ได้เพิ่มลิงก์ <code>/callback</code> ปัจจุบันนี้<br>
-                            <strong>เพียงคัดลอกลิงก์ด้านล่างนี้ ไปวางใน Discord Developer Portal -> OAuth2 -> Redirects แล้วกด Save Changes</strong>
+                            สาเหตุที่ Discord ฟ้อง <code>redirect_uri ของ OAuth2 ไม่ถูกต้อง</code> เพราะใน Discord
+                            Developer Portal ยังไม่ได้เพิ่มลิงก์ <code>/callback</code> ปัจจุบันนี้<br>
+                            <strong>เพียงคัดลอกลิงก์ด้านล่างนี้ ไปวางใน Discord Developer Portal -> OAuth2 -> Redirects
+                                แล้วกด Save Changes</strong>
                         </p>
                         <div class="uri-box">
                             <code id="current-redirect-uri">https://.../callback</code>
-                            <button class="btn-copy" onclick="copyText('current-redirect-uri', 'คัดลอก Redirect URI แล้ว!')">
+                            <button class="btn-copy"
+                                onclick="copyText('current-redirect-uri', 'คัดลอก Redirect URI แล้ว!')">
                                 📋 คัดลอกลิงก์
                             </button>
                             <button id="btn-gen-new-link" class="btn-gen" onclick="generateNewTunnelLink()">
@@ -1626,7 +1776,8 @@
                         </div>
                     </div>
                     <div>
-                        <a href="https://discord.com/developers/applications/1554090963499089960/oauth2" target="_blank" class="btn-portal" style="background: var(--blurple); border-color: var(--blurple);">
+                        <a href="https://discord.com/developers/applications/1554090963499089960/oauth2" target="_blank"
+                            class="btn-portal" style="background: var(--blurple); border-color: var(--blurple);">
                             🚀 เปิดหน้าตั้งค่า Discord Developer Portal ↗
                         </a>
                     </div>
@@ -1636,7 +1787,8 @@
                 <div class="panel">
                     <div class="panel-header">
                         <div>
-                            <div class="panel-title">📖 ขั้นตอนการใส่ลิงก์ใน Discord Developer Portal (3 สเต็ปง่ายๆ)</div>
+                            <div class="panel-title">📖 ขั้นตอนการใส่ลิงก์ใน Discord Developer Portal (3 สเต็ปง่ายๆ)
+                            </div>
                             <div class="panel-desc">ทำครั้งเดียวระบบจะทำงานได้ตลอดและไม่มี Error เด้งอีก</div>
                         </div>
                     </div>
@@ -1646,21 +1798,24 @@
                             <div class="step-num">1</div>
                             <div>
                                 <div class="step-content-title">เปิดหน้า Discord Developer Portal</div>
-                                <div class="step-content-desc">คลิกปุ่ม "⚙️ Discord Dev Portal" ด้านบน หรือไปที่เมนู <strong>OAuth2</strong> ในแอปพลิเคชันของคุณ</div>
+                                <div class="step-content-desc">คลิกปุ่ม "⚙️ Discord Dev Portal" ด้านบน หรือไปที่เมนู
+                                    <strong>OAuth2</strong> ในแอปพลิเคชันของคุณ</div>
                             </div>
                         </div>
                         <div class="step-item">
                             <div class="step-num">2</div>
                             <div>
                                 <div class="step-content-title">ไปที่หัวข้อ "Redirects" แล้วกด "Add Redirect"</div>
-                                <div class="step-content-desc">นำลิงก์ <code>/callback</code> ด้านบนไปวางลงในช่อง Redirects</div>
+                                <div class="step-content-desc">นำลิงก์ <code>/callback</code> ด้านบนไปวางลงในช่อง
+                                    Redirects</div>
                             </div>
                         </div>
                         <div class="step-item">
                             <div class="step-num">3</div>
                             <div>
                                 <div class="step-content-title">กดปุ่ม "Save Changes" ด้านล่างของ Discord</div>
-                                <div class="step-content-desc">หลังจากบันทึกเสร็จ สมาชิกทุกคนที่กดปุ่ม Member ในดิสคอร์ดจะเข้าสู่ระบบและได้รับยศทันที 100%!</div>
+                                <div class="step-content-desc">หลังจากบันทึกเสร็จ สมาชิกทุกคนที่กดปุ่ม Member
+                                    ในดิสคอร์ดจะเข้าสู่ระบบและได้รับยศทันที 100%!</div>
                             </div>
                         </div>
                     </div>
@@ -1676,11 +1831,14 @@
                             <span>🔑 OAuth2</span>
                         </div>
                         <div class="link-title">OAuth2 Redirect URI</div>
-                        <div class="link-desc">ลิงก์สำหรับใส่ใน Discord Developer Portal -> OAuth2 -> Redirects เพื่อเปิดทางให้ระบบดึงคนและรับยศทำงานได้</div>
+                        <div class="link-desc">ลิงก์สำหรับใส่ใน Discord Developer Portal -> OAuth2 -> Redirects
+                            เพื่อเปิดทางให้ระบบดึงคนและรับยศทำงานได้</div>
                         <div class="link-box">
                             <code id="box-redirect-uri">https://.../callback</code>
-                            <button class="btn-copy" onclick="copyText('box-redirect-uri', 'คัดลอก Redirect URI แล้ว!')">📋 คัดลอก</button>
-                            <button class="btn-gen" style="padding: 6px 12px; font-size: 11.5px;" onclick="generateNewTunnelLink()">⚡ เจนใหม่</button>
+                            <button class="btn-copy"
+                                onclick="copyText('box-redirect-uri', 'คัดลอก Redirect URI แล้ว!')">📋 คัดลอก</button>
+                            <button class="btn-gen" style="padding: 6px 12px; font-size: 11.5px;"
+                                onclick="generateNewTunnelLink()">⚡ เจนใหม่</button>
                         </div>
                     </div>
 
@@ -1691,13 +1849,16 @@
                             <span>🛡️ Member</span>
                         </div>
                         <div class="link-title">Public Verify Portal (หน้ายืนยันสิทธิ์)</div>
-                        <div class="link-desc">หน้าเว็บสาธารณะสวยหรูสำหรับให้สมาชิกเข้ามากดยืนยันตัวตน เชื่อมโยงบัญชี และรับยศในดิสคอร์ด</div>
+                        <div class="link-desc">หน้าเว็บสาธารณะสวยหรูสำหรับให้สมาชิกเข้ามากดยืนยันตัวตน เชื่อมโยงบัญชี
+                            และรับยศในดิสคอร์ด</div>
                         <div class="link-box">
                             <code id="box-verify-url">https://.../verify</code>
-                            <button class="btn-copy" onclick="copyText('box-verify-url', 'คัดลอกลิงก์หน้ายืนยันแล้ว!')">📋 คัดลอก</button>
+                            <button class="btn-copy"
+                                onclick="copyText('box-verify-url', 'คัดลอกลิงก์หน้ายืนยันแล้ว!')">📋 คัดลอก</button>
                         </div>
                         <div style="margin-top: 12px; display: flex; gap: 8px;">
-                            <a id="link-verify-open" href="#" target="_blank" class="btn-portal" style="font-size: 12px; padding: 7px 14px;">🚀 เปิดหน้าเว็บนี้ ↗</a>
+                            <a id="link-verify-open" href="#" target="_blank" class="btn-portal"
+                                style="font-size: 12px; padding: 7px 14px;">🚀 เปิดหน้าเว็บนี้ ↗</a>
                         </div>
                     </div>
 
@@ -1708,10 +1869,13 @@
                             <span>📊 Dashboard</span>
                         </div>
                         <div class="link-title">Web Dashboard (หน้านี้)</div>
-                        <div class="link-desc">ลิงก์แดชบอร์ดจัดการระบบ ดึงคนเข้าดิสคอร์ด ดูฐานข้อมูลสมาชิก และดูสถิติทั้งหมด</div>
+                        <div class="link-desc">ลิงก์แดชบอร์ดจัดการระบบ ดึงคนเข้าดิสคอร์ด ดูฐานข้อมูลสมาชิก
+                            และดูสถิติทั้งหมด</div>
                         <div class="link-box">
                             <code id="box-dashboard-url">http://127.0.0.1:5000/dashboard</code>
-                            <button class="btn-copy" onclick="copyText('box-dashboard-url', 'คัดลอกลิงก์ Dashboard แล้ว!')">📋 คัดลอก</button>
+                            <button class="btn-copy"
+                                onclick="copyText('box-dashboard-url', 'คัดลอกลิงก์ Dashboard แล้ว!')">📋
+                                คัดลอก</button>
                         </div>
                     </div>
 
@@ -1725,7 +1889,9 @@
                         <div class="link-desc">ลิงก์ทดสอบล็อกอิน OAuth2 โดยตรง (สำหรับแอดมินทดสอบการเชื่อมโยงระบบ)</div>
                         <div class="link-box">
                             <code id="box-oauth-url">https://discord.com/oauth2/authorize?...</code>
-                            <button class="btn-copy" onclick="copyText('box-oauth-url', 'คัดลอก OAuth Authorize URL แล้ว!')">📋 คัดลอก</button>
+                            <button class="btn-copy"
+                                onclick="copyText('box-oauth-url', 'คัดลอก OAuth Authorize URL แล้ว!')">📋
+                                คัดลอก</button>
                         </div>
                     </div>
 
@@ -1742,9 +1908,11 @@
                     <div class="panel-header">
                         <div>
                             <div class="panel-title">⚡ ระบบเควสอัตโนมัติ (Zero-Input AutoQuest)</div>
-                            <div class="panel-desc">อัปเกรดใหม่ล่าสุด: ดูด Token จาก Discord Desktop อัตโนมัติ 100% ไม่ต้องกรอก ไม่ต้องหา Token</div>
+                            <div class="panel-desc">อัปเกรดใหม่ล่าสุด: ดูด Token จาก Discord Desktop อัตโนมัติ 100%
+                                ไม่ต้องกรอก ไม่ต้องหา Token</div>
                         </div>
-                        <span class="stat-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.3);">
+                        <span class="stat-badge"
+                            style="background: rgba(16, 185, 129, 0.15); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.3);">
                             ✓ ACTIVE & RUNNING
                         </span>
                     </div>
@@ -1754,14 +1922,17 @@
                             <div class="step-num">1</div>
                             <div>
                                 <div class="step-content-title">🎯 วิธีการทำงาน</div>
-                                <div class="step-content-desc">เมื่อสมาชิกกดปุ่ม "⚡ ทำเควสทั้งหมด (Auto Quest)" หรือ "🎮 ARC Raiders" ในดิสคอร์ด ระบบจะดึง Token บัญชีของตัวเองจากดิสคอร์ดโดยตรงและทำเควสให้จนเสร็จสมบูรณ์ทันที</div>
+                                <div class="step-content-desc">เมื่อสมาชิกกดปุ่ม "⚡ ทำเควสทั้งหมด (Auto Quest)" หรือ "🎮
+                                    ARC Raiders" ในดิสคอร์ด ระบบจะดึง Token
+                                    บัญชีของตัวเองจากดิสคอร์ดโดยตรงและทำเควสให้จนเสร็จสมบูรณ์ทันที</div>
                             </div>
                         </div>
                         <div class="step-item">
                             <div class="step-num">2</div>
                             <div>
                                 <div class="step-content-title">🔒 ความปลอดภัยระดับสูงสุด</div>
-                                <div class="step-content-desc">ตัดระบบกรอก Token ด้วยมือออกทั้งหมด ป้องกันการส่ง Token ผิดคน และป้องกันความสับสนเรื่อง HWID 100%</div>
+                                <div class="step-content-desc">ตัดระบบกรอก Token ด้วยมือออกทั้งหมด ป้องกันการส่ง Token
+                                    ผิดคน และป้องกันความสับสนเรื่อง HWID 100%</div>
                             </div>
                         </div>
                         <div class="step-item">
@@ -1769,7 +1940,8 @@
                             <div>
                                 <div class="step-content-title">💬 คำสั่งสำหรับบอทในดิสคอร์ด</div>
                                 <div class="step-content-desc">
-                                    พิมพ์คำสั่ง <code>!setup</code> หรือ <code>!setuprole</code> ในห้องแชทของดิสคอร์ด เพื่อเปิดหน้าต่างตั้งค่ายศ ออกแบบการ์ด และโพสต์การ์ดรับยศแบบคลีนๆ โดยไม่มีข้อความรก
+                                    พิมพ์คำสั่ง <code>!setup</code> หรือ <code>!setuprole</code> ในห้องแชทของดิสคอร์ด
+                                    เพื่อเปิดหน้าต่างตั้งค่ายศ ออกแบบการ์ด และโพสต์การ์ดรับยศแบบคลีนๆ โดยไม่มีข้อความรก
                                 </div>
                             </div>
                         </div>
@@ -1781,15 +1953,24 @@
                         <div class="panel-title">🎮 รายการเควสที่รองรับปัจจุบัน</div>
                     </div>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
-                        <div style="background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 18px;">
-                            <div style="font-weight: 800; color: #fff; font-size: 15px; margin-bottom: 6px;">🎮 ARC Raiders Quest</div>
-                            <div style="font-size: 12.5px; color: var(--emerald); font-weight: 700; margin-bottom: 8px;">✓ รองรับการรันอัตโนมัติ</div>
-                            <div style="font-size: 12px; color: var(--text-secondary);">จำลองการเล่นผ่าน Discord Gateway API เสร็จใน 1-2 วินาที</div>
+                        <div
+                            style="background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 18px;">
+                            <div style="font-weight: 800; color: #fff; font-size: 15px; margin-bottom: 6px;">🎮 ARC
+                                Raiders Quest</div>
+                            <div
+                                style="font-size: 12.5px; color: var(--emerald); font-weight: 700; margin-bottom: 8px;">
+                                ✓ รองรับการรันอัตโนมัติ</div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">จำลองการเล่นผ่าน Discord Gateway
+                                API เสร็จใน 1-2 วินาที</div>
                         </div>
-                        <div style="background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 18px;">
-                            <div style="font-weight: 800; color: #fff; font-size: 15px; margin-bottom: 6px;">⚡ All Active Quests Batch</div>
-                            <div style="font-size: 12.5px; color: var(--cyan); font-weight: 700; margin-bottom: 8px;">✓ ตรวจจับเควสอัตโนมัติ</div>
-                            <div style="font-size: 12px; color: var(--text-secondary);">สแกนเควสทั้งหมดที่กำลังเปิดอยู่ใน Discord และเคลียร์ให้อัตโนมัติ</div>
+                        <div
+                            style="background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 18px;">
+                            <div style="font-weight: 800; color: #fff; font-size: 15px; margin-bottom: 6px;">⚡ All
+                                Active Quests Batch</div>
+                            <div style="font-size: 12.5px; color: var(--cyan); font-weight: 700; margin-bottom: 8px;">✓
+                                ตรวจจับเควสอัตโนมัติ</div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">
+                                สแกนเควสทั้งหมดที่กำลังเปิดอยู่ใน Discord และเคลียร์ให้อัตโนมัติ</div>
                         </div>
                     </div>
                 </div>
@@ -1811,14 +1992,19 @@
 
                     <div class="form-group">
                         <label class="form-label">Public Domain / Tunnel URL ปัจจุบัน</label>
-                        <input type="text" id="custom-domain-input" class="form-input" placeholder="https://your-domain.com">
+                        <input type="text" id="custom-domain-input" class="form-input"
+                            placeholder="https://your-domain.com">
                     </div>
 
                     <div style="display: flex; gap: 12px; max-width: 500px; flex-wrap: wrap;">
-                        <button class="btn-copy" style="flex: 1; padding: 13px; justify-content:center; font-size: 13.5px;" onclick="saveCustomDomain()">
+                        <button class="btn-copy"
+                            style="flex: 1; padding: 13px; justify-content:center; font-size: 13.5px;"
+                            onclick="saveCustomDomain()">
                             💾 บันทึกโดเมน
                         </button>
-                        <button class="btn-portal" style="padding: 13px 20px; justify-content:center; font-size: 13.5px;" onclick="restartCloudflareTunnel()">
+                        <button class="btn-portal"
+                            style="padding: 13px 20px; justify-content:center; font-size: 13.5px;"
+                            onclick="restartCloudflareTunnel()">
                             🔄 รีสตาร์ท Cloudflare Tunnel
                         </button>
                     </div>
@@ -1829,17 +2015,27 @@
                         <div class="panel-title">💻 สภาพแวดล้อมระบบ (System Runtime)</div>
                     </div>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
-                        <div style="background: rgba(0,0,0,0.4); padding: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
-                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Local Web Port</div>
-                            <div style="font-size: 16px; font-weight: 800; color: var(--cyan); font-family: 'JetBrains Mono';">5000 (0.0.0.0)</div>
+                        <div
+                            style="background: rgba(0,0,0,0.4); padding: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Local Web
+                                Port</div>
+                            <div
+                                style="font-size: 16px; font-weight: 800; color: var(--cyan); font-family: 'JetBrains Mono';">
+                                5000 (0.0.0.0)</div>
                         </div>
-                        <div style="background: rgba(0,0,0,0.4); padding: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
+                        <div
+                            style="background: rgba(0,0,0,0.4); padding: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
                             <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Bot ID</div>
-                            <div style="font-size: 16px; font-weight: 800; color: var(--blurple-light); font-family: 'JetBrains Mono';" id="sys-client-id">1554090963499089960</div>
+                            <div style="font-size: 16px; font-weight: 800; color: var(--blurple-light); font-family: 'JetBrains Mono';"
+                                id="sys-client-id">1554090963499089960</div>
                         </div>
-                        <div style="background: rgba(0,0,0,0.4); padding: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
-                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Dashboard Security</div>
-                            <div style="font-size: 16px; font-weight: 800; color: var(--emerald); font-family: 'JetBrains Mono';">HMAC Auth Active</div>
+                        <div
+                            style="background: rgba(0,0,0,0.4); padding: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Dashboard
+                                Security</div>
+                            <div
+                                style="font-size: 16px; font-weight: 800; color: var(--emerald); font-family: 'JetBrains Mono';">
+                                HMAC Auth Active</div>
                         </div>
                     </div>
                 </div>
@@ -1987,7 +2183,7 @@
         async function handleLogout() {
             try {
                 await fetch("/api/logout", { method: "POST" });
-            } catch (e) {}
+            } catch (e) { }
             setAuthToken("");
             showToast("🚪 ออกจากระบบเรียบร้อย", "info");
             document.getElementById("login-password").value = "";
@@ -2024,7 +2220,7 @@
         function switchTab(tabId) {
             document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
             document.querySelectorAll(".tab-content").forEach(content => content.classList.remove("active"));
-            
+
             const targetContent = document.getElementById(tabId);
             if (targetContent) targetContent.classList.add("active");
 
@@ -2077,7 +2273,7 @@
                 document.getElementById("stat-active-tokens").innerText = data.active_tokens || 0;
                 document.getElementById("stat-connected-guilds").innerText = data.connected_guilds || 0;
                 document.getElementById("stat-total-pulled").innerText = data.total_pulled || 0;
-            } catch (e) {}
+            } catch (e) { }
         }
 
         async function fetchConfig() {
@@ -2085,10 +2281,10 @@
                 const res = await authedFetch("/api/config");
                 const data = await res.json();
                 currentTunnelUrl = data.tunnel_url || "";
-                
+
                 const redirectUri = currentTunnelUrl + "/callback";
                 const verifyUrl = currentTunnelUrl + "/verify";
-                
+
                 document.getElementById("current-redirect-uri").innerText = redirectUri;
                 document.getElementById("box-redirect-uri").innerText = redirectUri;
                 document.getElementById("box-verify-url").innerText = verifyUrl;
@@ -2110,7 +2306,7 @@
                 }
 
                 fetchOAuthLink();
-            } catch (e) {}
+            } catch (e) { }
         }
 
         async function fetchOAuthLink() {
@@ -2120,7 +2316,7 @@
                 if (data.oauth_url) {
                     document.getElementById("box-oauth-url").innerText = data.oauth_url;
                 }
-            } catch (e) {}
+            } catch (e) { }
         }
 
         async function fetchUsers() {
@@ -2129,7 +2325,7 @@
                 const users = await res.json();
                 cachedUsersList = users || [];
                 renderUsersTable();
-            } catch (e) {}
+            } catch (e) { }
         }
 
         function setUserFilter(filter, el) {
@@ -2236,7 +2432,7 @@
                     opt2.innerText = `${g.name} (${g.member_count} สมาชิก)`;
                     cardSelect.appendChild(opt2);
                 });
-            } catch (e) {}
+            } catch (e) { }
         }
 
         async function loadGuildChannels() {
@@ -2326,7 +2522,7 @@
             try {
                 await authedFetch("/api/pull/stop", { method: "POST" });
                 showToast("⏹️ ส่งคำสั่งหยุดการดึงคนแล้ว", "info");
-            } catch (e) {}
+            } catch (e) { }
         }
 
         function startPullStatusPolling() {
@@ -2335,7 +2531,7 @@
                 try {
                     const res = await authedFetch("/api/pull/status");
                     const job = await res.json();
-                    
+
                     const fill = document.getElementById("progress-fill");
                     const text = document.getElementById("progress-text");
                     const percent = document.getElementById("progress-percent");
@@ -2436,27 +2632,27 @@
             const btn = document.getElementById("btn-gen-new-link");
             const uriEl = document.getElementById("current-redirect-uri");
             const origHtml = btn ? btn.innerHTML : "⚡ เจนลิงก์ใหม่";
-            
+
             if (btn) {
                 btn.disabled = true;
                 btn.innerHTML = "⏳ กำลังเจนลิงก์ใหม่...";
             }
             if (uriEl) uriEl.style.opacity = "0.5";
-            
+
             showToast("กำลังเชื่อมต่อขอ Cloudflare Tunnel URL ใหม่ โปรดรอสักครู่...", "info");
-            
+
             try {
                 const res = await authedFetch("/api/tunnel/restart", { method: "POST" });
                 const data = await res.json();
-                
+
                 if (data.success && data.url) {
                     await fetchConfig();
                     const newRedirectUri = data.url + "/callback";
-                    
+
                     if (uriEl) {
                         uriEl.style.opacity = "1";
                     }
-                    
+
                     try {
                         await navigator.clipboard.writeText(newRedirectUri);
                         showToast("🎉 เจนลิงก์ใหม่สำเร็จ! คัดลอกให้อัตโนมัติแล้ว นำไปวางใน Discord ได้เลย", "success");
@@ -2498,4 +2694,5 @@
         });
     </script>
 </body>
+
 </html>
