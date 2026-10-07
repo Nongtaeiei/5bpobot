@@ -41,7 +41,7 @@ def get_tunnel_url() -> str:
                 return _current_url
         except Exception:
             pass
-    return "https://5bpobot.onrender.com"
+    return "https://bot5bpo.onrender.com"
 
 
 def set_tunnel_url(new_url: str) -> str:
