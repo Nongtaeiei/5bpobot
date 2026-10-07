@@ -1,0 +1,11 @@
+# Sensitive credentials
+.env
+
+# Windows binaries & temp
+cloudflared.exe
+__pycache__/
+*.pyc
+*.log
+
+# Temp tunnels
+tunnel_url.txt

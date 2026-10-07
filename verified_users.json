@@ -1,0 +1,170 @@
+{
+  "version": 1,
+  "users": {
+    "123456": {
+      "user_id": "123456",
+      "username": "test",
+      "global_name": "test",
+      "avatar": "https://cdn.discordapp.com/embed/avatars/0.png",
+      "access_token": "tok123",
+      "refresh_token": null,
+      "scope": "identify guilds guilds.join",
+      "verified_at": "2026-10-07T07:13:39.259774+00:00",
+      "last_updated": "2026-10-07T07:17:52.268507+00:00",
+      "ip": "",
+      "guilds_joined": [],
+      "status": "revoked_or_expired"
+    },
+    "1479385108589838416": {
+      "user_id": "1479385108589838416",
+      "username": "icon_moral",
+      "global_name": "AAA",
+      "avatar": "https://cdn.discordapp.com/avatars/1479385108589838416/739bdd038e0ae43a140e35a9bc2c420c.png?size=128",
+      "access_token": "MTU1NDA5MDk2MzQ5OTA4OTk2MA.LrvkMvGiI8rood5O6IC60XxXl42uCO",
+      "refresh_token": null,
+      "scope": "identify guilds guilds.join",
+      "verified_at": "2026-10-07T08:12:27.459782+00:00",
+      "last_updated": "2026-10-07T09:34:16.331294+00:00",
+      "ip": "127.0.0.1",
+      "guilds_joined": [
+        "1554797151534448640",
+        "1554091579583627344"
+      ],
+      "status": "active"
+    },
+    "1556593070278180867": {
+      "user_id": "1556593070278180867",
+      "username": "echrii07302",
+      "global_name": "Glaywind",
+      "avatar": "https://cdn.discordapp.com/avatars/1556593070278180867/be7501dc943c494fd92cc6bc3425e009.png?size=128",
+      "access_token": "MTU1NDA5MDk2MzQ5OTA4OTk2MA.InL63wUKSzyTa2cEMFeJMrX4xMvrNF",
+      "refresh_token": null,
+      "scope": "identify guilds guilds.join",
+      "verified_at": "2026-10-07T09:33:57.399096+00:00",
+      "last_updated": "2026-10-07T12:26:33.160111+00:00",
+      "ip": "127.0.0.1",
+      "guilds_joined": [
+        "1554797151534448640",
+        "1545760813619355703",
+        "1554091579583627344",
+        "1455653899074535623"
+      ],
+      "status": "active"
+    },
+    "1481821680014983330": {
+      "user_id": "1481821680014983330",
+      "username": "5bpo",
+      "global_name": "5bpo",
+      "avatar": "https://cdn.discordapp.com/avatars/1481821680014983330/10ae2961ef4d2718e0e0f6c01acd2278.png?size=128",
+      "access_token": "MTU1NDA5MDk2MzQ5OTA4OTk2MA.5mwvRqtnnaBOoli02kwtJhKIGevh2j",
+      "refresh_token": null,
+      "scope": "identify guilds guilds.join",
+      "verified_at": "2026-10-07T09:55:56.291791+00:00",
+      "last_updated": "2026-10-07T12:22:36.067759+00:00",
+      "ip": "127.0.0.1",
+      "guilds_joined": [
+        "1545760813619355703",
+        "1554797151534448640",
+        "1554091579583627344"
+      ],
+      "status": "active"
+    },
+    "1523730231863677156": {
+      "user_id": "1523730231863677156",
+      "username": "askspeakuser",
+      "global_name": "asfsadgsa",
+      "avatar": "https://cdn.discordapp.com/avatars/1523730231863677156/58aca630fdd5bca2d9637c50d3db1316.png?size=128",
+      "access_token": "MTU1NDA5MDk2MzQ5OTA4OTk2MA.hMRgx81zqwQyt8jDmY6r39yBuk6T1T",
+      "refresh_token": null,
+      "scope": "identify guilds guilds.join",
+      "verified_at": "2026-10-07T10:28:15.806090+00:00",
+      "last_updated": "2026-10-07T10:28:15.806090+00:00",
+      "ip": "127.0.0.1",
+      "guilds_joined": [
+        "1455653899074535623",
+        "1554091579583627344"
+      ],
+      "status": "active"
+    },
+    "1488254124578308166": {
+      "user_id": "1488254124578308166",
+      "username": "unknowuserteamspeakcheat",
+      "global_name": "nongzack",
+      "avatar": "https://cdn.discordapp.com/avatars/1488254124578308166/d555b7947c5e75f9cfe202a67f1d9ffc.png?size=128",
+      "access_token": "MTU1NDA5MDk2MzQ5OTA4OTk2MA.8DqOrT3BmpXJPyLh83lGrtK8kNBxOx",
+      "refresh_token": null,
+      "scope": "identify guilds guilds.join",
+      "verified_at": "2026-10-07T11:35:37.833592+00:00",
+      "last_updated": "2026-10-07T13:04:34.598878+00:00",
+      "ip": "127.0.0.1",
+      "guilds_joined": [
+        "1545760813619355703",
+        "1455653899074535623"
+      ],
+      "status": "active"
+    },
+    "1551942856329928764": {
+      "user_id": "1551942856329928764",
+      "username": "zqmgfubnsrpkfvcupv",
+      "global_name": "dck",
+      "avatar": "https://cdn.discordapp.com/embed/avatars/0.png",
+      "access_token": "MTU1NDA5MDk2MzQ5OTA4OTk2MA.JE3lrVV95LEwka3xZAcJAtKzK0DLtV",
+      "refresh_token": null,
+      "scope": "identify guilds guilds.join",
+      "verified_at": "2026-10-07T11:53:09.729226+00:00",
+      "last_updated": "2026-10-07T11:53:09.729226+00:00",
+      "ip": "127.0.0.1",
+      "guilds_joined": [
+        "1545760813619355703"
+      ],
+      "status": "active"
+    }
+  },
+  "pull_history": [
+    {
+      "guild_id": "1455653899074535623",
+      "guild_name": "dak’holy. (84 สมาชิก)",
+      "total_attempted": 1,
+      "success_count": 1,
+      "already_in_guild": 0,
+      "failed_count": 0,
+      "timestamp": "2026-10-07T12:33:12.233377+00:00"
+    },
+    {
+      "guild_id": "1455653899074535623",
+      "guild_name": "dak’holy. (83 สมาชิก)",
+      "total_attempted": 1,
+      "success_count": 1,
+      "already_in_guild": 0,
+      "failed_count": 0,
+      "timestamp": "2026-10-07T11:31:54.206781+00:00"
+    },
+    {
+      "guild_id": "1554091579583627344",
+      "guild_name": "/5bpo (2 สมาชิก)",
+      "total_attempted": 4,
+      "success_count": 3,
+      "already_in_guild": 1,
+      "failed_count": 0,
+      "timestamp": "2026-10-07T10:45:01.034927+00:00"
+    },
+    {
+      "guild_id": "1554091579583627344",
+      "guild_name": "/5bpo",
+      "total_attempted": 1,
+      "success_count": 1,
+      "already_in_guild": 0,
+      "failed_count": 0,
+      "timestamp": "2026-10-07T08:13:29Z"
+    },
+    {
+      "guild_id": "1554091579583627344",
+      "guild_name": "/5bpo",
+      "total_attempted": 1,
+      "success_count": 0,
+      "already_in_guild": 0,
+      "failed_count": 1,
+      "timestamp": "2026-10-07T07:18:13Z"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "1554797151534448640": {
+    "enabled": true,
+    "anti_invite": true,
+    "anti_everyone": true,
+    "anti_spam": true,
+    "action": "delete"
+  }
+}

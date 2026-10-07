@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>DISCORD VERIFICATION PORTAL</title>
+    <style>
+        :root {
+            --bg: #07090e;
+            --card-bg: rgba(13, 17, 27, 0.94);
+            --primary: #5865f2;
+            --primary-hover: #4752c4;
+            --accent: #22c55e;
+            --accent-glow: rgba(34, 197, 94, 0.35);
+            --error: #ef4444;
+            --cyan: #38bdf8;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(34, 197, 94, 0.3);
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 50% -20%, rgba(88, 101, 242, 0.18) 0%, transparent 60%),
+                radial-gradient(circle at 50% 110%, rgba(34, 197, 94, 0.12) 0%, transparent 50%),
+                linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 28px 28px, 28px 28px;
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.18) 50%);
+            background-size: 100% 4px;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .portal-container {
+            position: relative;
+            z-index: 10;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-top: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 26px;
+            padding: 44px 36px;
+            width: 100%;
+            max-width: 460px;
+            text-align: center;
+            box-shadow: 0 35px 70px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 50px rgba(88, 101, 242, 0.08);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            animation: cardAppear 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+        .portal-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 14px;
+            height: 14px;
+            border-top: 2px solid var(--accent);
+            border-left: 2px solid var(--accent);
+            border-top-left-radius: 8px;
+        }
+        .portal-container::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 14px;
+            height: 14px;
+            border-bottom: 2px solid var(--accent);
+            border-right: 2px solid var(--accent);
+            border-bottom-right-radius: 8px;
+        }
+
+        /* SHIELD & ICON ANIMATIONS */
+        .icon-wrapper {
+            position: relative;
+            width: 104px;
+            height: 104px;
+            margin: 0 auto 28px;
+        }
+        .pulse-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 90px;
+            height: 90px;
+            transform: translate(-50%, -50%) scale(0.8);
+            border: 1.5px solid var(--accent);
+            border-radius: 50%;
+            opacity: 0;
+            animation: radarPulse 3s infinite ease-out;
+        }
+        .shield-svg {
+            width: 100%;
+            height: 100%;
+            fill: none;
+            stroke-width: 3.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: all 0.4s ease;
+        }
+        .shield-svg.green {
+            stroke: var(--accent);
+            filter: drop-shadow(0 0 16px var(--accent-glow));
+        }
+        .shield-svg.blue {
+            stroke: var(--primary);
+            filter: drop-shadow(0 0 16px rgba(88, 101, 242, 0.4));
+        }
+        .shield-svg.red {
+            stroke: var(--error);
+            filter: drop-shadow(0 0 16px rgba(239, 68, 68, 0.4));
+        }
+        .shield-path {
+            stroke-dasharray: 260;
+            stroke-dashoffset: 0;
+            animation: drawLine 0.9s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        .laser-line {
+            position: absolute;
+            left: 5%;
+            right: 5%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent) 30%, var(--accent) 70%, transparent);
+            box-shadow: 0 0 15px var(--accent), 0 0 5px var(--accent);
+            filter: blur(0.5px);
+            opacity: 0.85;
+            animation: laserScan 2.4s ease-in-out infinite;
+        }
+
+        /* AVATAR RING */
+        .user-avatar-wrap {
+            position: relative;
+            width: 96px;
+            height: 96px;
+            margin: 0 auto 22px;
+        }
+        .user-avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent);
+            box-shadow: 0 0 24px rgba(34, 197, 94, 0.45);
+            animation: zoomIn 0.4s ease-out;
+        }
+        .avatar-badge {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            background: var(--accent);
+            color: #030408;
+            font-size: 13px;
+            font-weight: 800;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #0d111b;
+        }
+
+        /* HEADINGS */
+        h1 {
+            font-size: 21px;
+            font-weight: 800;
+            letter-spacing: 1.2px;
+            color: #ffffff;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #ffffff 60%, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        p.subtitle {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-muted);
+            margin-bottom: 26px;
+        }
+        .highlight-user {
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        /* STEPS LIST */
+        .verify-steps {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 14px 18px;
+            margin-bottom: 26px;
+            text-align: left;
+            font-size: 12px;
+        }
+        .step-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            align-items: center;
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+        .step-num {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-muted);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+        }
+        .step-item.active .step-num {
+            background: var(--accent);
+            color: #000;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+        }
+        .step-title {
+            color: var(--text-muted);
+            font-size: 11px;
+        }
+        .step-item.active .step-title {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* AUDIT METRICS GRID */
+        .audit-grid {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 16px 18px;
+            font-size: 12.5px;
+            margin-bottom: 26px;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+        .audit-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 11px;
+            font-family: "SF Mono", Consolas, Menlo, monospace;
+        }
+        .audit-row:last-child {
+            margin-bottom: 0;
+        }
+        .audit-label {
+            color: var(--text-muted);
+            font-size: 11.5px;
+        }
+        .audit-val {
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+        .audit-val.cyan {
+            color: #38bdf8;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+        }
+        .audit-val.green {
+            color: #4ade80;
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid rgba(74, 222, 128, 0.25);
+        }
+        .audit-val.blue {
+            color: #60a5fa;
+            background: rgba(96, 165, 250, 0.1);
+            border: 1px solid rgba(96, 165, 250, 0.25);
+        }
+
+        /* BUTTONS */
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 15px 24px;
+            border-radius: 14px;
+            font-size: 14.5px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            border: none;
+            outline: none;
+            margin-bottom: 16px;
+        }
+        .btn-discord {
+            background: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 10px 25px rgba(88, 101, 242, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+        .btn-discord:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 14px 30px rgba(88, 101, 242, 0.55);
+        }
+        .btn-success {
+            background: #16a34a;
+            color: #ffffff;
+            box-shadow: 0 10px 25px rgba(22, 163, 74, 0.4);
+        }
+        .btn-success:hover {
+            background: #15803d;
+            transform: translateY(-2px);
+        }
+        .btn-action:active {
+            transform: translateY(0);
+        }
+
+        /* FOOTER & TRUST BADGE */
+        .trust-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 11.5px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+        .trust-badge svg {
+            width: 14px;
+            height: 14px;
+            fill: var(--accent);
+        }
+        .footer-bar {
+            font-family: "SF Mono", Consolas, Menlo, monospace;
+            font-size: 11px;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding-top: 18px;
+            display: flex;
+            justify-content: space-between;
+            opacity: 0.85;
+        }
+
+        /* SPINNER */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2.5px solid rgba(255, 255, 255, 0.2);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+
+        /* KEYFRAMES */
+        @keyframes cardAppear {
+            from { opacity: 0; transform: translateY(24px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes drawLine {
+            to { stroke-dashoffset: 0; }
+        }
+        @keyframes radarPulse {
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.7; }
+            100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
+        }
+        @keyframes laserScan {
+            0% { top: 12%; opacity: 0; }
+            12% { opacity: 1; }
+            88% { opacity: 1; }
+            100% { top: 88%; opacity: 0; }
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.7); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="portal-container" id="portal-card">
+        
+        <!-- ============================================== -->
+        <!-- VIEW 1: PORTAL LANDING (ก่อนกดยืนยันตัวตน)       -->
+        <!-- ============================================== -->
+        <div id="view-portal" style="display: none;">
+            <div class="icon-wrapper">
+                <div class="pulse-ring"></div>
+                <div class="laser-line"></div>
+                <svg class="shield-svg blue" viewBox="0 0 100 100">
+                    <path class="shield-path" d="M50,15 L80,24 L80,55 C80,74 50,85 50,85 C50,85 20,74 20,55 L20,24 Z"></path>
+                    <path d="M50,34 L50,56 M50,66 L50.01,66" stroke-width="4.5"></path>
+                </svg>
+            </div>
+            <h1 id="portal-title">VERIFY PORTAL</h1>
+            <p class="subtitle" id="portal-desc">
+                ระบบยืนยันตัวตนความปลอดภัย กรุณากดปุ่มด้านล่างเพื่อเชื่อมต่อ Discord และรับยศเข้าใช้งานเซิร์ฟเวอร์
+            </p>
+
+            <div class="verify-steps">
+                <div class="step-item active">
+                    <div class="step-num">1</div>
+                    <div class="step-title">เชื่อมต่อบัญชี</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">2</div>
+                    <div class="step-title">ตรวจสอบสิทธิ์</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">3</div>
+                    <div class="step-title">รับยศทันที</div>
+                </div>
+            </div>
+
+            <a class="btn-action btn-discord" href="#" id="btn-login-discord">
+                <svg width="22" height="17" viewBox="0 0 127.14 96.36" fill="currentColor">
+                    <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,45.91,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,45.91,96.12,53,91.08,65.69,84.69,65.69Z"/>
+                </svg>
+                <span>เข้าสู่ระบบเพื่อยืนยันตัวตน</span>
+            </a>
+
+            <div class="trust-badge">
+                <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                <span>ความปลอดภัยระดับ TLS 1.3 • Discord Official OAuth2</span>
+            </div>
+
+            <div class="footer-bar">
+                <span>GATEWAY 3.1</span>
+                <span class="live-clock">--:--:-- UTC</span>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- VIEW 2: LOADING / SCANNING (กำลังประมวลผล)       -->
+        <!-- ============================================== -->
+        <div id="view-loading" style="display: none;">
+            <div class="icon-wrapper">
+                <div class="pulse-ring"></div>
+                <div class="laser-line"></div>
+                <svg class="shield-svg green" viewBox="0 0 100 100">
+                    <path class="shield-path" d="M50,15 L80,24 L80,55 C80,74 50,85 50,85 C50,85 20,74 20,55 L20,24 Z"></path>
+                </svg>
+            </div>
+            <h1>AUTHENTICATING...</h1>
+            <p class="subtitle">กำลังเชื่อมโยงและตรวจสิทธิ์บัญชี Discord กรุณารอสักครู่...</p>
+            <div style="margin: 20px 0;">
+                <span class="spinner"></span>
+            </div>
+            <div class="footer-bar">
+                <span>VERIFYING TOKEN</span>
+                <span class="live-clock">--:--:-- UTC</span>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- VIEW 3: SUCCESS (ยืนยันสำเร็จ มอบยศเรียบร้อย)    -->
+        <!-- ============================================== -->
+        <div id="view-success" style="display: none;">
+            <div class="user-avatar-wrap">
+                <img alt="Avatar" class="user-avatar-img" id="user-avatar" src="https://cdn.discordapp.com/embed/avatars/0.png"/>
+                <div class="avatar-badge">✓</div>
+            </div>
+            <h1 style="color: var(--accent);">VERIFIED SUCCESSFUL</h1>
+            <p class="subtitle">
+                ยินดีต้อนรับคุณ <span class="highlight-user" id="user-display-name">Member</span><br/>
+                บัญชีของคุณได้รับการยืนยันและได้รับยศเรียบร้อยแล้ว!
+            </p>
+
+            <div class="audit-grid">
+                <div class="audit-row">
+                    <span class="audit-label">&gt; DISCORD USER</span>
+                    <span class="audit-val cyan" id="audit-username">@User</span>
+                </div>
+                <div class="audit-row">
+                    <span class="audit-label">&gt; GRANTED ROLE</span>
+                    <span class="audit-val green" id="audit-role">🛡️ Member</span>
+                </div>
+                <div class="audit-row">
+                    <span class="audit-label">&gt; SERVER</span>
+                    <span class="audit-val blue" id="audit-server">Community</span>
+                </div>
+                <div class="audit-row">
+                    <span class="audit-label">&gt; SECURITY PROTOCOL</span>
+                    <span class="audit-val green">TLS_1.3 ENCRYPTED</span>
+                </div>
+            </div>
+
+            <a class="btn-action btn-success" href="discord://" id="btn-return-discord">
+                <span>✓ ยืนยันเรียบร้อย (กลับไปที่ Discord)</span>
+            </a>
+
+            <div class="footer-bar">
+                <span>IDENTITY ANCHORED</span>
+                <span class="live-clock">--:--:-- UTC</span>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- VIEW 4: ERROR / FAILED                         -->
+        <!-- ============================================== -->
+        <div id="view-error" style="display: none;">
+            <div class="icon-wrapper">
+                <svg class="shield-svg red" viewBox="0 0 100 100">
+                    <path class="shield-path" d="M50,15 L80,24 L80,55 C80,74 50,85 50,85 C50,85 20,74 20,55 L20,24 Z"></path>
+                    <path d="M38,38 L62,62 M62,38 L38,62" stroke-width="4"></path>
+                </svg>
+            </div>
+            <h1 style="color: var(--error);">VERIFICATION FAILED</h1>
+            <p class="subtitle" id="error-message" style="color: #f87171;">
+                ไม่สามารถยืนยันตัวตนได้ กรุณาลองใหม่อีกครั้ง
+            </p>
+
+            <a class="btn-action btn-discord" href="/verify" id="btn-retry">
+                <span>🔄 ลองใหม่อีกครั้ง</span>
+            </a>
+
+            <div class="footer-bar">
+                <span>ERROR_HANDSHAKE</span>
+                <span class="live-clock">--:--:-- UTC</span>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const showView = (viewName) => {
+            const views = ["view-portal", "view-loading", "view-success", "view-error"];
+            views.forEach(v => {
+                const el = document.getElementById(v);
+                if (el) el.style.display = (v === viewName) ? "block" : "none";
+            });
+        };
+
+        const updateClock = () => {
+            const now = new Date();
+            const timeStr = now.toISOString().substring(11, 19) + " UTC";
+            document.querySelectorAll(".live-clock").forEach(el => el.innerText = timeStr);
+        };
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const hash = window.location.hash.substring(1);
+            const search = window.location.search.substring(1);
+            const hashParams = new URLSearchParams(hash);
+            const searchParams = new URLSearchParams(search);
+
+            const accessToken = hashParams.get("access_token");
+            const code = searchParams.get("code");
+            const stateParam = hashParams.get("state") || searchParams.get("state");
+            const guildId = searchParams.get("guild_id") || "";
+            const roleId = searchParams.get("role_id") || "";
+
+            // ถ้ามี Access Token หรือ Code อยู่ใน URL ให้เข้าสู่กระบวนการยืนยันทันที
+            if (accessToken || code) {
+                showView("view-loading");
+
+                try {
+                    const res = await fetch("/api/claim_role", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            access_token: accessToken,
+                            code: code,
+                            state: stateParam,
+                            guild_id: guildId || hashParams.get("guild_id") || "",
+                            role_id: roleId || hashParams.get("role_id") || ""
+                        })
+                    });
+
+                    const data = await res.json();
+                    if (data && data.success) {
+                        // อัปเดตข้อมูลบนหน้าจอ
+                        const displayName = data.username || "Member";
+                        document.getElementById("user-display-name").innerText = displayName;
+                        document.getElementById("audit-username").innerText = "@" + displayName;
+                        if (data.avatar) {
+                            document.getElementById("user-avatar").src = data.avatar;
+                        }
+                        if (data.role_name) {
+                            document.getElementById("audit-role").innerText = "🛡️ " + data.role_name;
+                        }
+                        if (data.guild_name) {
+                            document.getElementById("audit-server").innerText = data.guild_name;
+                        }
+
+                        showView("view-success");
+                    } else {
+                        const errMsg = (data && data.error) ? data.error : "ไม่สามารถตรวจสอบสิทธิ์กับ Discord ได้";
+                        document.getElementById("error-message").innerText = errMsg;
+                        showView("view-error");
+                    }
+                } catch (err) {
+                    document.getElementById("error-message").innerText = "เกิดข้อผิดพลาดในการเชื่อมต่อ: " + err.message;
+                    showView("view-error");
+                }
+                return;
+            }
+
+            // ถ้าไม่มี Token (เข้ามาหน้า /verify ครั้งแรก) ให้แสดงหน้า Portal ยืนยันตัวตน
+            showView("view-portal");
+
+            // ดึง OAuth URL จากเซิร์ฟเวอร์
+            try {
+                let oauthApiUrl = "/api/oauth_url";
+                if (guildId && roleId) {
+                    oauthApiUrl += `?guild_id=${guildId}&role_id=${roleId}`;
+                }
+                const oRes = await fetch(oauthApiUrl);
+                const oData = await oRes.json();
+                if (oData && oData.oauth_url) {
+                    const loginBtn = document.getElementById("btn-login-discord");
+                    if (loginBtn) {
+                        loginBtn.href = oData.oauth_url;
+                    }
+                }
+            } catch (e) {
+                console.warn("Failed to get dynamic oauth url:", e);
+            }
+        });
+    </script>
+</body>
+</html>

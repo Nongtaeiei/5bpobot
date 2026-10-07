@@ -1,0 +1,16 @@
+{
+  "1554797151534448640": {
+    "title": "SAKURA MODS TICKET",
+    "description": "คลิกปุ่มด้านล่าง เพื่อสร้างตั๋ว ห้ามกดเล่นโดยเด็ดขาด\n\n> 💖 **สามารถติดต่อถามสอบถามได้ 24/7**",
+    "image_url": "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExNmt5Y3cyMWh2bGY5aHB0MTR2d2FwOW42YnZ3cWdjNDV2cGQxbjBsNiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/NAdEYIRFMCBhMGkXSq/giphy.gif",
+    "button_label": "Open Ticket",
+    "button_emoji": "📩",
+    "button_style": "primary",
+    "footer": "Powered by tickets.bot",
+    "color": 2829617,
+    "category_id": 1557344505181634621,
+    "support_role_id": 1556936202727194725,
+    "ticket_counter": 1,
+    "active_tickets": {}
+  }
+}
